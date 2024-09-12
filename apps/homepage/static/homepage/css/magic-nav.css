@@ -1,0 +1,174 @@
+
+:root {
+    --clr: #0d6efd;
+}
+
+
+
+.navigation {
+    position: relative;
+    width: 400px;
+    height: 70px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navigation ul {
+    display: flex;
+    width: 350px;
+}
+
+.navigation ul li {
+    position: relative;
+    list-style: none;
+    width: 70px;
+    height: 70px;
+    z-index: 1;
+}
+
+.navigation ul li a {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    text-align: center;
+    font-weight: 500;
+
+}
+
+
+.navigation ul li a .icon {
+    position: relative;
+    display: block;
+    line-height: 75px;
+    font-size: 1.5em;
+    text-align: center;
+    transition: 0.5s;
+    color: var(--clr);
+}
+
+.navigation ul li.active a .icon {
+    transform: translateY(-40px);
+}
+.navigation ul li.active a .text {
+    opacity: 1;
+    transform: translateY(10px);
+
+}
+
+.navigation ul li:hover a .icon {
+    transform: translateY(-40px);
+
+}
+
+
+
+.navigation ul li:hover a .text {
+    opacity: 1;
+    transform: translateY(10px);
+
+}
+
+.navigation ul li a .text {
+    position: absolute;
+    color: white;
+    padding: 2px 7px;
+    background: #0d6efd;
+    border-radius: 12px;
+    font-weight: 400;
+    font-size: 0.75em;
+    letter-spacing: 0.05em;
+    transition: 0.5s;
+    opacity: 0;
+    transform: translateY(20px);
+
+}
+
+
+
+.indicador {
+    position: absolute;
+    top: -70%;
+    left: 0;
+    width: 70px;
+    height: 70px;
+    background: #212529;
+    border-radius: 50%;
+    border: 6px solid var(--clr);
+    transition: 0.5s;
+}
+
+.indicador1 {
+
+    position: absolute;
+    top: -70%;
+    left:-100px;
+    width: 70px;
+    height: 70px;
+    background: #212529;
+    border-radius: 50%;
+    border: 6px solid var(--clr);
+    transition: 0.5s;
+
+
+}
+
+
+.indicador::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -22px;
+    width: 22px;
+    height: 20px;
+    background: transparent;
+    border-top-right-radius: 20px;
+    box-shadow: 0px -10px 0 0 var(--clr);
+
+}
+
+
+.indicador::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -22px;
+    width: 22px;
+    height: 20px;
+    background: transparent;
+    border-top-left-radius: 20px;
+    box-shadow: 0px -10px 0 0 var(--clr);
+
+}
+
+.navigation ul li:nth-child(1).active ~ .indicador
+{
+    transform: translateX(calc(70px * 0.8));
+
+}
+.navigation ul li:nth-child(2).active ~ .indicador
+{
+    transform: translateX(calc(70px * 1.8));
+}
+.navigation ul li:nth-child(3).active ~ .indicador
+{
+    transform: translateX(calc(70px * 2.8));
+}
+
+
+.navigation ul li:nth-child(1):hover ~ .indicador1
+{
+    transform: translateX(calc(195px * 0.8));
+}
+.navigation ul li:nth-child(2):hover ~ .indicador1
+{
+    transform: translateX(calc(125px *1.8));
+}
+.navigation ul li:nth-child(3):hover ~ .indicador1
+{
+    transform: translateX(calc(105px * 2.8));
+}

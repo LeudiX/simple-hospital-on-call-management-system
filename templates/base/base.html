@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Programación-Web(Django 3.2)</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{% static 'img/ico.png' %}">
+    <link href="{% static 'libs/bootstrap/bootstrap.min.css' %}" rel="stylesheet">
+    <script src="{% static 'libs/bootstrap/bootstrap.bundle.min.js' %}"></script>
+
+    <style>
+        .fakeimg {
+            height: 200px;
+            background: #aaa;
+        }
+    </style>
+    {% block head %}
+
+    {% endblock %}
+
+</head>
+<body>
+
+<div class="p-5 bg-primary text-white text-center">
+    <h1>Programacion Web 2023</h1>
+    <p>Departamento de Informática</p>
+
+</div>
+
+<nav class="navbar bg-dark navbar-dark ">
+    {% block navbar %}
+
+    {% endblock %}
+
+
+</nav>
+
+<div class="container mt-5">
+
+    {% block container %}
+
+
+    {% endblock %}
+</div>
+<footer class="bg-dark text-white pt-5 pb-4">
+    <div class="container text-center text-md-end">
+        <div class=" row text-md-end">
+            <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 text-warning ">University</h5>
+                <p> Universidad De las Ciencias Informáticas</p>
+                <p> FTI </p>
+            </div>
+            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto">
+                <h5 class="text-uppercase mb-4 text-warning ">FrontEnd</h5>
+                <p> Html 5</p>
+                <p> Bootstrap 5</p>
+                <p> Jquery 3</p>
+                <h5 class="text-uppercase mb-4 text-warning ">BackEnd</h5>
+                <p> Python 3.6</p>
+                <p> Django 3.2</p>
+
+            </div>
+            <div class="col-md-1 col-lg-1 col-xl-1 mx-auto">
+                <h5 class="text-uppercase mb-4 text-warning ">Usefull Links</h5>
+                <p>
+                    <a href="https://www.w3schools.com/" class="text-white">FrontEnd</a>
+                </p>
+                <p>
+                    <a href="https://docs.djangoproject.com/en/3.2/" class="text-white">BackEnd</a>
+                </p>
+
+
+            </div>
+
+        </div>
+
+        <hr class="mb-4">
+
+    </div>
+
+
+</footer>
+</body>
+ <script src="{% static 'libs/jquery/jquery.slim.min.js' %}"></script>
+{% block script %}
+    <script>
+
+        document.getElementById('home').classList.add('active');
+    </script>
+{% endblock %}
+</html>
