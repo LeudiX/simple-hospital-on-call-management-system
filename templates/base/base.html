@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Programación-Web(Django 3.2)</title>
+    <title>Hospital On Call M-System(Django 5.1.1)</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="{% static 'img/ico.png' %}">
@@ -22,22 +22,22 @@
 </head>
 <body>
 
-<div class="p-5 bg-primary text-white text-center">
-    <h1>Programacion Web 2023</h1>
-    <p>Departamento de Informática</p>
-
+<div class="p-5 bg-success text-white text-center">
+    <h1>Hospital On-Call Managament System</h1>
+    <p>PWeb Course Lab Demostration</p>
 </div>
 
 <nav class="navbar bg-dark navbar-dark ">
     {% block navbar %}
 
     {% endblock %}
-
-
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <h4 class="justify-content-end">Welcome to the System dear <strong class="text-primary">User</strong></h4>
+    </div>
 </nav>
 
 <div class="container mt-5">
-
     {% block container %}
 
 
@@ -85,7 +85,6 @@
  <script src="{% static 'libs/jquery/jquery.slim.min.js' %}"></script>
 {% block script %}
     <script>
-
         document.getElementById('home').classList.add('active');
     </script>
 {% endblock %}
