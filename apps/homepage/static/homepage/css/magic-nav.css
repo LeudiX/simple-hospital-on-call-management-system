@@ -1,6 +1,6 @@
 
 :root {
-    --clr: #0d6efd;
+    --clr: #07a138;
 }
 
 
@@ -77,7 +77,7 @@
     position: absolute;
     color: white;
     padding: 2px 7px;
-    background: #0d6efd;
+    background: #07a138;
     border-radius: 12px;
     font-weight: 400;
     font-size: 0.75em;
@@ -145,10 +145,10 @@
 
 }
 
+/*Initial position of magic nav list elements*/
 .navigation ul li:nth-child(1).active ~ .indicador
 {
-    transform: translateX(calc(70px * 0.8));
-
+    transform: translateX(calc(68px * 0.8));
 }
 .navigation ul li:nth-child(2).active ~ .indicador
 {
@@ -158,17 +158,33 @@
 {
     transform: translateX(calc(70px * 2.8));
 }
+.navigation ul li:nth-child(4).active ~ .indicador
+{
+    transform: translateX(calc(70px * 3.8));
+}
+.navigation ul li:nth-child(5).active ~ .indicador
+{
+    transform: translateX(calc(70px * 4.8));
+}
 
-
+/*Relative position of magic nav circle elements*/
 .navigation ul li:nth-child(1):hover ~ .indicador1
 {
-    transform: translateX(calc(195px * 0.8));
+    transform: translateX(calc(193px * 0.8));
 }
 .navigation ul li:nth-child(2):hover ~ .indicador1
 {
-    transform: translateX(calc(125px *1.8));
+    transform: translateX(calc(120.5px *1.8));
 }
 .navigation ul li:nth-child(3):hover ~ .indicador1
 {
-    transform: translateX(calc(105px * 2.8));
+    transform: translateX(calc(100.5px * 2.8));
+}
+.navigation ul li:nth-child(4):hover ~ .indicador1
+{
+    transform: translateX(calc(91px * 3.8));
+}
+.navigation ul li:nth-child(5):hover ~ .indicador1
+{
+    transform: translateX(calc(84.5px * 4.8));
 }

@@ -12,5 +12,11 @@
 {% block container %}
     {% include 'homepage/carousel.html' %}
     <hr class="mb-4">
+    {% comment "container" %}
     {% include 'homepage/container.html' %}
+    {% endcomment %}
+    
+{% endblock %}
+{% block footer %}
+    {% include 'homepage/footer.html' %}
 {% endblock %}

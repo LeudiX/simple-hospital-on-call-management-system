@@ -29,58 +29,20 @@
 
 <nav class="navbar bg-dark navbar-dark ">
     {% block navbar %}
-
     {% endblock %}
     <div class="col-md-4"></div>
     <div class="col-md-4">
-        <h4 class="justify-content-end">Welcome to the System dear <strong class="text-primary">User</strong></h4>
+        <h4 class="justify-content-end">Welcome to the system dear <strong class="text-success">User</strong></h4>
     </div>
 </nav>
 
-<div class="container mt-5">
     {% block container %}
-
-
     {% endblock %}
-</div>
-<footer class="bg-dark text-white pt-5 pb-4">
-    <div class="container text-center text-md-end">
-        <div class=" row text-md-end">
-            <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-                <h5 class="text-uppercase mb-4 text-warning ">University</h5>
-                <p> Universidad De las Ciencias Informáticas</p>
-                <p> FTI </p>
-            </div>
-            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto">
-                <h5 class="text-uppercase mb-4 text-warning ">FrontEnd</h5>
-                <p> Html 5</p>
-                <p> Bootstrap 5</p>
-                <p> Jquery 3</p>
-                <h5 class="text-uppercase mb-4 text-warning ">BackEnd</h5>
-                <p> Python 3.6</p>
-                <p> Django 3.2</p>
-
-            </div>
-            <div class="col-md-1 col-lg-1 col-xl-1 mx-auto">
-                <h5 class="text-uppercase mb-4 text-warning ">Usefull Links</h5>
-                <p>
-                    <a href="https://www.w3schools.com/" class="text-white">FrontEnd</a>
-                </p>
-                <p>
-                    <a href="https://docs.djangoproject.com/en/3.2/" class="text-white">BackEnd</a>
-                </p>
 
 
-            </div>
+    {% block footer %}
+    {% endblock %}
 
-        </div>
-
-        <hr class="mb-4">
-
-    </div>
-
-
-</footer>
 </body>
  <script src="{% static 'libs/jquery/jquery.slim.min.js' %}"></script>
 {% block script %}
