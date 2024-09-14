@@ -1,4 +1,5 @@
-    <div class="col-md-4 navigation nav-item">
+    {% load static %}
+    <div class="navigation nav-item">
         <ul>
             <li class="list  " id="home">
                 <a href="{% url 'home' %}">
@@ -49,5 +50,8 @@
             <div class="indicador1" id="aa"></div>
         </ul>
     </div>
-
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <h4 class="text-white justify-content-end">Welcome to the system dear <strong class="text-success">User</strong></h4>
+    </div>
 

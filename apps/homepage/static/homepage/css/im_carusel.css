@@ -4,21 +4,11 @@
     }
 
     .carousel-item img{
-        height: 480px;
-        width: 768px;
+        height: 64dvh;
+        width: 64dvh;
     }
-    carousel-caption{
-        height: 480px;
-        width: 768px;
-    }
-    carousel-inner{
-        height: 480px;
-        width: 768px;
-    }
-
-
+    
     .carousel-item {
-        height: 300px;
         min-height: 300px;
         background: no-repeat center center scroll;
         -webkit-background-size: cover;
@@ -38,7 +28,4 @@
         /*Same size for all images despite its resolution border-top-left-radius: calc(0.25 rem - 1 px);*/
         border-top-right-radius: calc(0.25rem - 1px);
     }
-    .carousel-caption p{
-        background: #0a53be;
-        border-radius: 1px;
-    }
+    

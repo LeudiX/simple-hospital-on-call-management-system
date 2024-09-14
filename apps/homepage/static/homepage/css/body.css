@@ -1,0 +1,10 @@
+body {
+    overflow-y: scroll; /* Add the ability to scroll */
+    -ms-overflow-style: none;  /* Hiding the scrollbar on  IE and Edge */
+    scrollbar-width: none;  /*Hiding the scrollbar on Firefox */
+}   
+
+body::-webkit-scrollbar{
+    display: none; /*Hiding the scrollbar on Chrome*/
+}
+
