@@ -4,6 +4,12 @@
 
 py -m venv **venv-name**
 
+## Activate your venv
+source myvenv/bin/activate
+
+##Install Django
+pip install django
+
 ## Install requirements.txt
 
 pip install -r requirements.txt
