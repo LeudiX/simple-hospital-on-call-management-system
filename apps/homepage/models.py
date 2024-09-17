@@ -7,7 +7,7 @@ from apps.users.models import Doctor,Patient
 class Consultation(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='consultations_doctor') #One to many 
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='consultations_patient')
-    consultation_date = models.DateTimeField(default=timezone.now().date())
+    consultation_date = models.DateTimeField(default=timezone.now().date)
     notes = models.TextField(max_length=200,blank=True, null=True)  # Optional notes field
 
     def __str__(self):
