@@ -42,3 +42,11 @@ class Consultation(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()  # Run model validation before saving
         super().save(*args, **kwargs)
+        
+        """_TODO_
+        
+        WARNINGS:
+        homepage.Consultation.consultation_date: (fields.W161) Fixed default value provided.
+        HINT: It seems you set a fixed date / time / datetime value as default for this field. 
+        This may not be what you want. If you want to have the current date as default, use `django.utils.timezone.now`
+        """
