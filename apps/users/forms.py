@@ -29,9 +29,7 @@ class RegistrationForm(UserCreationForm):
         label='Birthdate',
         widget=forms.DateInput(attrs={'class':'datepicker','type':'date'}),
         )
-    
-
-    
+        
     class Meta:
         model = CustomUser
         fields = ('username', 'email','user_type','birthdate','gender') 

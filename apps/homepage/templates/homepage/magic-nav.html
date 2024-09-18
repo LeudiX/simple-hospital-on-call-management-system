@@ -39,13 +39,16 @@
                             <span class="text">Profile</span>
                         </a>
                     </li>
+                     <!--Updated since Django doesn't allow this operation
+                    be handled by a GET Method (Security Issues)-->
                     <li class="list " id="logout">
-                        <a href="{% url 'logout' %}"><!--Go to Logout URL-->
+                        <form method="post" action="{% url 'logout' %}"><!--Go to Logout URL-->
+                            {% csrf_token %}
                             <span class="icon">
                                 <i class="fa fa-sign-out fa-lg fa-fw" aria-hidden="true"></i>
                             </span>
-                            <span class="text">Log-Out</span>
-                        </a>
+                            <button type="submit"class="text">Log-Out</button>
+                        </form>
                     </li>
                 {% endif %}
             
@@ -73,7 +76,7 @@
             </ul>
         </div>
         <div class="d-flex flex-row-reverse col-md-6 col-lg-6 px-3">
-            <h4 class="text-white justify-content-end">Welcome to the system dear <strong class="text-success">User</strong>
+            <h4 class="text-white justify-content-end">Welcome to the system dear <strong class="text-success">{{user.username}}</strong>
             </h4>
         </div>
     </div>
