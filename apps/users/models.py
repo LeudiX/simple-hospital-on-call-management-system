@@ -105,15 +105,13 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return f"Name: {self.first_name} {self.last_name} ({self.user_type})"
     
-    def greet(self):
-        return {GENDER_MALE:'Welcome Mr.{self.username}', GENDER_FEMALE:'Welcome Ms.{self.username}'}[self.gender]
     
-    """Calculate the age of the patient in years."""
+    """Calculate the age of the user in years."""
     def get_age(self):
         age=datetime.date.today()-self.birth_date 
         return int((age).days/365.25)
     
-    """Check if the patient's age is within human standards (18-120 years)."""
+    """Check if the user's age is within human standards (18-120 years)."""
     def is_age_valid(self):
         age = self.get_age()
         return 0<= age <=120

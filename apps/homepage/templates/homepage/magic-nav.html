@@ -42,14 +42,18 @@
                      <!--Updated since Django doesn't allow this operation
                     be handled by a GET Method (Security Issues)-->
                     <li class="list " id="logout">
-                        <form method="post" action="{% url 'logout' %}"><!--Go to Logout URL-->
-                            {% csrf_token %}
+                        <a>
                             <span class="icon">
                                 <i class="fa fa-sign-out fa-lg fa-fw" aria-hidden="true"></i>
                             </span>
-                            <button type="submit"class="text">Log-Out</button>
-                        </form>
+                            <span id="logout-span" role="button" class="text">Logout</span>
+                        </a>
                     </li>
+                     <!--Using a Javascript magic trick to handle Logout submission without affect the visuals-->
+                     <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: none;"><!--Go to Logout URL-->
+                        {% csrf_token %}
+                        <button type="submit">Logout</button>
+                    </form>
                 {% endif %}
             
                     {% if not user.is_authenticated %}
@@ -58,7 +62,7 @@
                                 <span class="icon">
                                     <i class="fa fa-sign-in fa-lg fa-fw" aria-hidden="true"></i>
                                 </span>
-                                <span class="text">Log-In</span>
+                                <span class="text">Login</span>
                             </a>
                         </li>
                         <li class="list" id="register">
@@ -76,8 +80,28 @@
             </ul>
         </div>
         <div class="d-flex flex-row-reverse col-md-6 col-lg-6 px-3">
-            <h4 class="text-white justify-content-end">Welcome to the system dear <strong class="text-success">{{user.username}}</strong>
-            </h4>
+            {% if user %} 
+                <h4 class="text-white justify-content-end"> 
+                Welcome
+                    <strong class="text-success">   
+                        {% if user.gender == 'M'%}
+                            Mr.{{user.username}}
+                            Role: {{user.user_type}}
+                        {% elif user.gender == 'F' %}
+                            Ms.{{user.username}}
+                            Role: {{user.user_type}}
+                        {% endif %}
+                    </strong>
+            {% else %}    
+                to System
+                </h4>
+            {% endif %}
         </div>
     </div>
 </nav>
+
+<script>
+    document.getElementById('logout-span').addEventListener('click', function() {
+        document.getElementById('logout-form').submit();
+    });
+</script>
