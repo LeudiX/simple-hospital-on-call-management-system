@@ -64,13 +64,15 @@ class CustomUser(AbstractUser):
         ('patient','Patient'),
         ('doctor','Doctor'),
     )
-    
-    GENDER_MALE=0
-    GENDER_FEMALE=1
-    
+     
+    SEX_FEMALE = 'F'
+    SEX_MALE = 'M'
+    SEX_UNSURE = 'U'
+     
     GENDER_CHOICES=(
-        (GENDER_MALE,'Male'),
-        (GENDER_FEMALE,'Female')
+        (SEX_MALE,'Male'),
+        (SEX_FEMALE,'Female'),
+        (SEX_UNSURE,'Unsure')
     )
     
     USERNAME_FIELD='email'
@@ -89,8 +91,8 @@ class CustomUser(AbstractUser):
     email = models.EmailField(verbose_name='email',unique=True,help_text="The email field is required",
                               error_messages={'unique': 'A user with that email already exits'})
     
-    birth_date = models.DateField(verbose_name='birthdate',help_text='Select your birth date')
-    gender = models.IntegerField(verbose_name='gender', choices=GENDER_CHOICES, help_text='Select your gender')
+    birth_date = models.DateField(verbose_name='birthdate',help_text='Select your birth date',null=True,blank=True)
+    gender = models.CharField(verbose_name='gender',max_length=1, choices=GENDER_CHOICES, help_text='Select your gender')
      
     """_Role based authorization purposes_
     """
@@ -115,7 +117,7 @@ class CustomUser(AbstractUser):
     def is_age_valid(self):
         age = self.get_age()
         return 0<= age <=120
-            
+    
     objects=CustomUserManager()
 
 """_Using Multi-table Inheritance and Proxy Models for handle the complex User Data Model and enhance future mantainment and scalability_"""

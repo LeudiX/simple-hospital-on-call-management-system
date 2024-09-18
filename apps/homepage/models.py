@@ -7,7 +7,9 @@ from apps.users.models import Doctor,Patient
 class Consultation(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='consultations_doctor') #One to many 
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='consultations_patient')
-    consultation_date = models.DateTimeField(default=timezone.now().date)
+    
+    #Solved issue with timezone.now and migrations mistake reboot every time. Also when i create and object of this type
+    consultation_date = models.DateTimeField(default=timezone.now) 
     notes = models.TextField(max_length=200,blank=True, null=True)  # Optional notes field
 
     def __str__(self):

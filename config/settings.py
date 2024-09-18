@@ -121,7 +121,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False #Changed in order to access to Date Time picker in User Register Form
 
 USE_TZ = True
 
@@ -137,9 +137,18 @@ STATICFILES_DIRS = [
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
+AUTH_USER_MODEL = 'users.CustomUser'
+
+LOGIN_URL = 'login' #Login URL name
+
+LOGOUT_URL = 'logout' #Logout URL name
+
+LOGIN_REDIRECT_URL = 'home' #Desired redirect url
+
+LOGOUT_REDIRECT_URL = 'home' #Desired redirect url
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'users.CustomUser'

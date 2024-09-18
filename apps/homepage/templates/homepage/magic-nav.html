@@ -1,57 +1,80 @@
-    {% load static %}
-    <div class="navigation nav-item">
-        <ul>
-            <li class="list  " id="home">
-                <a href="{% url 'home' %}">
-                    <span class="icon">
-                       <i class="fas fa-clinic-medical fa-fw"></i>
-                    </span>
-                    <span class="text">Lobby</span>
-                </a>
-            </li>
-    
-            <li class="list" id="apps">
-                <a href="#">
-                    <span class="icon">
-                   <i class="fas fa-hand-holding-medical fa-fw" aria-hidden="true"></i>
-                    </span>
-                    <span class="text">Consultations</span>
-                </a>
-            </li>
-    
-            <li class="list " id="pro">
-                <a href="#">
-                    <span class="icon">
-                    <i class="fa fa-user-circle-o fa-lg fa-fw" aria-hidden="true"></i>
-                    </span>
-                    <span class="text">Profile</span>
-                </a>
-            </li>
+{% load static %}
+<nav class="navbar bg-dark navbar-dark navbar-expand-md">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+    <div class="collapse navbar-collapse justify-content-start" id="navbarSupportedContent">
+        <div class="navigation nav-item">
+            <ul>
+                <!--Home-->
+                <li class="list  " id="home">
+                    <a href="{% url 'home' %}">
+                        <span class="icon">
+                            <i class="fas fa-clinic-medical fa-fw"></i>
+                        </span>
+                        <span class="text">Lobby</span>
+                    </a>
+                </li>
 
-            <li class="list " id="login">
-                <a href="#">
-                    <span class="icon">
-                    <i class="fa fa-sign-in fa-lg fa-fw" aria-hidden="true"></i>
-                    </span>
-                    <span class="text">Log-In</span>
-                </a>
-            </li>
+                <!--Handling authorization with Django-->
+                {% if user.is_authenticated %}
+                    {% if user.is_doctor %}
+                        <li class="list" id="apps">
+                            <a href="#"><!--Go to consultations URL-->
+                                <span class="icon">
+                                    <i class="fas fa-hand-holding-medical fa-fw" aria-hidden="true"></i>
+                                </span>
+                                <span class="text">Consultations</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li class="list " id="pro">
+                        <a href="#"><!--Go to Profile URL-->
+                            <span class="icon">
+                                <i class="fa fa-user-circle-o fa-lg fa-fw" aria-hidden="true"></i>
+                            </span>
+                            <span class="text">Profile</span>
+                        </a>
+                    </li>
+                    <li class="list " id="logout">
+                        <a href="{% url 'logout' %}"><!--Go to Logout URL-->
+                            <span class="icon">
+                                <i class="fa fa-sign-out fa-lg fa-fw" aria-hidden="true"></i>
+                            </span>
+                            <span class="text">Log-Out</span>
+                        </a>
+                    </li>
+                {% endif %}
             
-            <li class="list " id="logout">
-                <a href="#">
-                    <span class="icon">
-                    <i class="fa fa-sign-out fa-lg fa-fw" aria-hidden="true"></i>
-                    </span>
-                    <span class="text">Log-Out</span>
-                </a>
-            </li>
-    
-            <div class="indicador"></div>
-            <div class="indicador1" id="aa"></div>
-        </ul>
+                    {% if not user.is_authenticated %}
+                        <li class="list " id="login">
+                            <a href="{% url 'login' %}"><!--Go to Login URL-->
+                                <span class="icon">
+                                    <i class="fa fa-sign-in fa-lg fa-fw" aria-hidden="true"></i>
+                                </span>
+                                <span class="text">Log-In</span>
+                            </a>
+                        </li>
+                        <li class="list" id="register">
+                            <!--Go to registration view-->
+                            <a href="{% url 'register' %}"><!--Go to Register URL-->
+                                <span class="icon">
+                                    <i class="fa fa-pencil fa-lg fa-fw" aria-hidden="true"></i>
+                                </span>
+                                <span class="text">Sign-Up</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                <div class="indicador"></div>
+                <div class="indicador1" id="aa"></div>
+            </ul>
+        </div>
+        <div class="d-flex flex-row-reverse col-md-6 col-lg-6 px-3">
+            <h4 class="text-white justify-content-end">Welcome to the system dear <strong class="text-success">User</strong>
+            </h4>
+        </div>
     </div>
-    <div class="col-md-4"></div>
-    <div class="col-md-4">
-        <h4 class="text-white justify-content-end">Welcome to the system dear <strong class="text-success">User</strong></h4>
-    </div>
-
+</nav>

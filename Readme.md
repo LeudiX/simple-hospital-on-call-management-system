@@ -30,3 +30,12 @@ SECRET_KEY=my_secret_key_value
 DEBUG=True
 **
 Also your .env file must be located in the same folder of settings.py
+
+## Migrations Issues
+
+-In case you're facing troubles(or make a mistake with migrations) in this 
+project, i recommend delete all the migrations files, pycache or just the db.
+-After do it. Change some field in your models or comment
+-Run *py manage.py makemigrations appname --dry-run --verbosity 3*
+-Apply you migrations in every app separately
+-Migrate

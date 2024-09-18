@@ -3,7 +3,13 @@
 <html lang="en">
 
 <head>
-    <title>Hospital On Call M-System(Django 5.1.1)</title>
+    <title>
+        {% if title %}
+            {{ title }}
+        {% else %}
+        Hospital On Call M-System(Django 5.1.1)
+        {% endif %}
+    </title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="{% static 'img/ico.png' %}">
@@ -20,14 +26,28 @@
         <h1>Hospital On-Call Managament System</h1>
         <p>PWeb Course Lab Demostration</p>
     </div>
-
-    <nav class="navbar bg-dark navbar-dark ">
-        {% block navbar %}
-        {% endblock %}
-    </nav>
-
-    {% block container %}
+ 
+    {% block navbar %}
     {% endblock %}
+
+    {% block carousel %}
+    {% endblock %}
+    
+    <main role="main" class="container">
+        <div class="row">
+          <div class="col-md-12 my-3">
+            <!--Custom logic for messages-->
+            {% if messages %} {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+              <!--context var-->
+              {{ message }}
+            </div>
+            {% endfor %} {% endif %} 
+            {% block content %}
+            {% endblock %}
+          </div>
+        </div>
+    </main>
 
 
     {% block footer %}
