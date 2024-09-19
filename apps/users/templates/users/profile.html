@@ -1,18 +1,22 @@
 {% extends "base/base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-<h1>My Profile</h1>
-
-<form method="post">
-    {% csrf_token %} {{ form|crispy }}
-    <button type="submit" class="btn btn-primary">Update Profile</button>
-</form>
-
-<p><strong>Username:</strong> {{ user.username }}</p>
-<p><strong>Email:</strong> {{ user.email }}</p>
-
-<p><strong>Birthdate:</strong> {{ user.birthdate }}</p>
-<p><strong>Age:</strong> {{ age }}</p>
-<p><strong>Gender:</strong> {{ user.gender }}</p>
-<!--<p><strong>Address:</strong> {{ user.address }}</p>-->
+<h1 class="text-white">My Profile</h1>
+<div class="row g-3">
+    <div class="col-sm-6">
+        <form method="post">
+            {% csrf_token %} {{ form|crispy }}
+            <button type="submit" class="btn btn-success">Update Profile</button>
+        </form>
+    </div>
+    <div class="col-sm justify-content-end">
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        
+        <p><strong>Birthdate:</strong> {{ user.birthdate }}</p>
+        <p><strong>Age:</strong> {{ age }}</p>
+        <p><strong>Gender:</strong> {{ user.gender }}</p>
+        <!--<p><strong>Address:</strong> {{ user.address }}</p>-->
+    </div>
+</div>
 {% endblock %}

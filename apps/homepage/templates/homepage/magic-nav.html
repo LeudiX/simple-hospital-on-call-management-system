@@ -32,7 +32,7 @@
                         </li>
                     {% endif %}
                     <li class="list " id="pro">
-                        <a href="#"><!--Go to Profile URL-->
+                        <a href="{% url 'profile' %}"><!--Go to Profile URL-->
                             <span class="icon">
                                 <i class="fa fa-user-circle-o fa-lg fa-fw" aria-hidden="true"></i>
                             </span>
@@ -89,9 +89,10 @@
                         {% elif user.gender == 'F' %}
                             Ms.{{user.username}}    
                         {% endif %}
-                        Role: {{user.user_type}}
-                        Birth: {{user.birthdate}}
                     </strong>
+                        <!--User's type capitalized -->
+                        Role:<strong class="text-success"> {{ user.user_type.capitalize }}</strong> 
+                        Birthdate: <strong class="text-success"> {{user.birthdate}}</strong> 
             {% else %}    
                 to System
                 </h4>

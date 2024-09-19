@@ -1,9 +1,11 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from .forms import RegistrationForm,ProfileForm
 from .models import CustomUser
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import update_session_auth_hash
 
 # CustomUser Views.
 def register(request):
@@ -32,10 +34,10 @@ def register(request):
         form = RegistrationForm()
     return render(request,'users/register.html',{'form':form})
 
-@login_required
+@login_required # Decorator to protect views that require authentication
 def profile(request,pk):
-    
-    custom_user = get_object_or_404(CustomUser,pk=pk)
+    User = get_user_model() # Retrieving the user model, ensuring compatibility with custom user models
+    custom_user = User.objects.get(pk=request.user.pk) # Fetching fresh data
     if request.method =='POST':
         form = ProfileForm(request.POST,instance=request.user) # Access linked user profile
         if form.is_valid():
