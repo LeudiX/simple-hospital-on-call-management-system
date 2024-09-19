@@ -9,6 +9,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import update_session_auth_hash
 
 # CustomUser Views.
+
+"""_View for register a new user in system _"""
 def register(request):
     if request.method == 'POST':
         # Create a form that handle a POST request
@@ -35,6 +37,7 @@ def register(request):
         form = RegistrationForm()
     return render(request,'users/register.html',{'form':form})
 
+"""_Showing the current user's profile [No pk required]_"""
 @login_required # Decorator to protect views that require authentication
 def profile(request):
     User = get_user_model() # Retrieving the user model, ensuring compatibility with custom user models
