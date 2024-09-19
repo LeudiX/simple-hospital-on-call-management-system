@@ -37,5 +37,16 @@ Also your .env file must be located in the same folder of settings.py
 project, i recommend delete all the migrations files, pycache or just the db.
 -After do it. Change some field in your models or comment
 -Run *py manage.py makemigrations appname --dry-run --verbosity 3*
--Apply you migrations in every app separately
--Migrate
+-Migrate with *py manage.py migrate*
+
+
+## View the schema
+
+-Download sqlit3 tools, install it and setting it up as enviroment variables in you path
+-Type sqlite3 *dbname* in your terminal
+-After entering to the sqlite3 CLI, type *.tables* to see the hole schema
+-Type .schema *tablename* to see the table schema
+
+## Create superuser
+
+-Type *python manage.py createsuperuser*

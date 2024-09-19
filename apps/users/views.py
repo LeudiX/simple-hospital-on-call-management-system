@@ -1,7 +1,9 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
-
-from .forms import RegistrationForm
+from django.contrib.auth.decorators import login_required
+from .forms import RegistrationForm,ProfileForm
+from .models import CustomUser
+from django.shortcuts import get_object_or_404
 
 # CustomUser Views.
 def register(request):
@@ -30,3 +32,22 @@ def register(request):
         form = RegistrationForm()
     return render(request,'users/register.html',{'form':form})
 
+@login_required
+def profile(request,pk):
+    
+    custom_user = get_object_or_404(CustomUser,pk=pk)
+    if request.method =='POST':
+        form = ProfileForm(request.POST,instance=request.user) # Access linked user profile
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated!')
+            return redirect('profile')
+    else:
+        form = ProfileForm(instance=request.user) # Pre-fill with current data
+        age = custom_user.get_age()
+    context = {
+        'form':form,
+        'age':age,
+        'birthdate':custom_user.birth_date
+        }
+    return render(request,'users/profile.html',context)

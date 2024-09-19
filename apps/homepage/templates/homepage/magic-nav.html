@@ -86,11 +86,11 @@
                     <strong class="text-success">   
                         {% if user.gender == 'M'%}
                             Mr.{{user.username}}
-                            Role: {{user.user_type}}
                         {% elif user.gender == 'F' %}
-                            Ms.{{user.username}}
-                            Role: {{user.user_type}}
+                            Ms.{{user.username}}    
                         {% endif %}
+                        Role: {{user.user_type}}
+                        Birth: {{user.birth_date}}
                     </strong>
             {% else %}    
                 to System
@@ -101,6 +101,7 @@
 </nav>
 
 <script>
+    //Submit logout form when closing session
     document.getElementById('logout-span').addEventListener('click', function() {
         document.getElementById('logout-form').submit();
     });

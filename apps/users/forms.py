@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm,UserChangeForm
 from django.contrib.auth import password_validation
 from .models import CustomUser
 
@@ -32,4 +32,20 @@ class RegistrationForm(UserCreationForm):
         
     class Meta:
         model = CustomUser
-        fields = ('username', 'email','user_type','birthdate','gender') 
+        fields = ('username', 'email','user_type','birthdate','gender') # Fields to edit
+
+class CustomUserChangeForm(UserChangeForm):
+
+    class Meta:
+        model = CustomUser
+        fields = ("email",)
+
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email','user_type','birthdate','gender'] # Fields to edit
+        widgets = {
+            'birthdate': forms.DateInput(attrs={'type': 'date'}), # Improved date picker
+        }
