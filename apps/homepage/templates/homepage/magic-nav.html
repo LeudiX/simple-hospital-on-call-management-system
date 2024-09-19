@@ -10,10 +10,10 @@
         <div class="navigation nav-item">
             <ul>
                 <!--Home-->
-                <li class="list  " id="home">
+                <li class="list" id="home">
                     <a href="{% url 'home' %}">
                         <span class="icon">
-                            <i class="fas fa-clinic-medical fa-fw"></i>
+                            <i class="fas fa-clinic-medical fa-lg fa-fw"></i>
                         </span>
                         <span class="text">Lobby</span>
                     </a>
@@ -22,16 +22,16 @@
                 <!--Handling authorization with Django-->
                 {% if user.is_authenticated %}
                     {% if user.is_doctor %}
-                        <li class="list" id="apps">
+                        <li class="list" id="consultations">
                             <a href="#"><!--Go to consultations URL-->
                                 <span class="icon">
-                                    <i class="fas fa-hand-holding-medical fa-fw" aria-hidden="true"></i>
+                                    <i class="fas fa-hand-holding-medical fa-lg fa-fw" aria-hidden="true"></i>
                                 </span>
                                 <span class="text">Consultations</span>
                             </a>
                         </li>
                     {% endif %}
-                    <li class="list " id="pro">
+                    <li class="list " id="profile">
                         <a href="{% url 'profile' %}"><!--Go to Profile URL-->
                             <span class="icon">
                                 <i class="fa fa-user-circle-o fa-lg fa-fw" aria-hidden="true"></i>
@@ -56,16 +56,16 @@
                     </form>
                 {% endif %}
             
-                    {% if not user.is_authenticated %}
-                        <li class="list " id="login">
+                {% if not user.is_authenticated %}
+                    <li class="list " id="login">
                             <a href="{% url 'login' %}"><!--Go to Login URL-->
                                 <span class="icon">
                                     <i class="fa fa-sign-in fa-lg fa-fw" aria-hidden="true"></i>
                                 </span>
                                 <span class="text">Login</span>
                             </a>
-                        </li>
-                        <li class="list" id="register">
+                    </li>
+                    <li class="list" id="register">
                             <!--Go to registration view-->
                             <a href="{% url 'register' %}"><!--Go to Register URL-->
                                 <span class="icon">
@@ -73,30 +73,11 @@
                                 </span>
                                 <span class="text">Sign-Up</span>
                             </a>
-                        </li>
-                    {% endif %}
+                    </li>
+                {% endif %}
                 <div class="indicador"></div>
                 <div class="indicador1" id="aa"></div>
             </ul>
-        </div>
-        <div class="d-flex flex-row-reverse col-md-6 col-lg-6 px-3">
-            {% if user %} 
-                <h4 class="text-white justify-content-end"> 
-                Welcome
-                    <strong class="text-success">   
-                        {% if user.gender == 'M'%}
-                            Mr.{{user.username}}
-                        {% elif user.gender == 'F' %}
-                            Ms.{{user.username}}    
-                        {% endif %}
-                    </strong>
-                        <!--User's type capitalized -->
-                        Role:<strong class="text-success"> {{ user.user_type.capitalize }}</strong> 
-                        Birthdate: <strong class="text-success"> {{user.birthdate}}</strong> 
-            {% else %}    
-                to System
-                </h4>
-            {% endif %}
         </div>
     </div>
 </nav>

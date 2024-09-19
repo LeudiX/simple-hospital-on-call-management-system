@@ -3,7 +3,13 @@
 
 {% block navbar %}
     {% include 'homepage/magic-nav.html' %}
+    <div class="d-flex  col-md-6 col-lg-6 px-3">
+        {% if user.is_authenticated %} 
+            <h4 class="ms-auto" style="color: goldenrod;">Welcome to Angelical Saviours!!</h4>
+        {% endif %}
+    </div>
 {% endblock %}
+
 
 {% block carousel %}
     {% include 'homepage/carousel.html' %}

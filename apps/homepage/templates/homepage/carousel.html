@@ -3,12 +3,47 @@
 <!-- Carousel -->
 <div class="row">
     <div class="col-md-4">
+        {% if user.is_authenticated %} 
+            <div class="d-flex px-5 mb-5">
+                <h5 class="text-success justify-content-start">
+                        User:
+                        <strong class="text-white">   
+                            {% if user.gender == 'M'%}
+                                Mr.{{user.username.capitalize}}
+                            {% elif user.gender == 'F' %}
+                                Ms.{{user.username.capitalize}}    
+                            {% endif %}
+                        </strong>
+                            <!--User's type capitalized -->
+                        <hr> Role:<strong class="text-white"> {{ user.user_type.capitalize }}</strong> 
+                        <hr> Birthdate: <strong class="text-white"> {{user.birthdate}}</strong>
+                </h5>    
+            </div>
+        {% endif %}
         <div class="px-5 text-white">
-            <h4 class = "text-uppercase mb-4 text-success">Services Offered</h4>
-            <ul class="text-start">
-                <li>Common Consultations</li>
-                <li>Urgency Consultations</li>
-            </ul>
+            <h4 class = "text-uppercase text-success">
+                {% if user.is_authenticated %} 
+                    Access to services
+                    {% else %}
+                    Services
+                {% endif %}
+            </h4>
+                <div class="my-2">
+                   <a href="#" style="text-decoration: none;">
+                    <span class="icon text-success">
+                        <i class="fas fa-clinic-medical fa-lg fa-fw"></i>
+                    </span>
+                    <span class="text-white">Common Consultations</span>
+                   </a> 
+                </div>
+                <div class="my-2">
+                    <a href="#" style="text-decoration: none;">
+                       <span class="icon text-success"> 
+                        <i class="fas fa-clinic-medical fa-lg fa-fw"></i>
+                        </span> 
+                       <span class="text-white">Urgency Consultations</span> 
+                    </a>
+                </div>
         </div>
     </div>
     <div class="col-md-8">
@@ -46,7 +81,7 @@
                         class="d-block" style="width:100%">
                     <div class="carousel-caption text-light bg-success">
                         <h3>Emergency Consultations</h3>
-                        <p>Proffessional service at Live's service</p>
+                        <p>Professional service at Live's service</p>
                     </div>
                 </div>
                 <div class="carousel-item">

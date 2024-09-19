@@ -34,7 +34,7 @@ def register(request):
                 #Handling password mismatch error
                 form.add_error('password2','Passwords entered do not match.Try again')
     else:
-        form = RegistrationForm()
+        form = RegistrationForm() # Form load for GET method
     return render(request,'users/register.html',{'form':form})
 
 """_Showing the current user's profile [No pk required]_"""

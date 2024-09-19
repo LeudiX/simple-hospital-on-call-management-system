@@ -1,7 +1,12 @@
 {% extends "base/base.html" %}
 {% load crispy_forms_tags %}
+
+{% block navbar %}
+    {% include 'homepage/magic-nav.html' %}
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
+<div class="container my-2 text-white">
   <h2>Register</h2>
   <form method="post" autocomplete="off">
     <!--Avoid or mitigate CSRF attacks-->
@@ -12,7 +17,7 @@
       <strong>Password Strength:</strong>
       <div id="password-strength">Please, enter a password.</div>
     </div>
-    <button type="submit" class="btn btn-primary" style="margin-top: 8px">
+    <button type="submit" class="btn btn-success" style="margin-top: 8px">
       Register
     </button>
   </form>
@@ -50,5 +55,11 @@
       }
     });
   });
+</script>
+{% endblock %}
+
+{% block script %}
+<script>
+    document.getElementById('register').classList.add('active');
 </script>
 {% endblock %}
