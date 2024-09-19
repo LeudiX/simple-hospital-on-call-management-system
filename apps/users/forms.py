@@ -45,7 +45,7 @@ class CustomUserChangeForm(UserChangeForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = CustomUser
-        fields = ['username', 'email','user_type','birthdate','gender'] # Fields to edit
+        fields = ['username', 'email','birthdate','gender'] # Fields to edit
         widgets = {
             'birthdate': forms.DateInput(attrs={'type': 'date'}), # Improved date picker
         }

@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from .forms import RegistrationForm,ProfileForm
 from .models import CustomUser
 from django.shortcuts import get_object_or_404
@@ -35,7 +36,7 @@ def register(request):
     return render(request,'users/register.html',{'form':form})
 
 @login_required # Decorator to protect views that require authentication
-def profile(request,pk):
+def profile(request):
     User = get_user_model() # Retrieving the user model, ensuring compatibility with custom user models
     custom_user = User.objects.get(pk=request.user.pk) # Fetching fresh data
     if request.method =='POST':
@@ -45,7 +46,7 @@ def profile(request,pk):
             messages.success(request, 'Your profile has been updated!')
             return redirect('profile')
     else:
-        form = ProfileForm(instance=request.user) # Pre-fill with current data
+        form = ProfileForm(instance=request.user) # Pre-fill with current data for GET method
         age = custom_user.get_age()
     context = {
         'form':form,
