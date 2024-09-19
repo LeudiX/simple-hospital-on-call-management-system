@@ -109,7 +109,7 @@ class CustomUser(AbstractUser):
     
     """Calculate the age of the user in years."""
     def get_age(self):
-        age=datetime.date.today()-self.birth_date 
+        age=datetime.date.today()-self.birthdate 
         return int((age).days/365.25)
     
     """Check if the user's age is within human standards (18-120 years)."""

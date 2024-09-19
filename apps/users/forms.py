@@ -38,7 +38,7 @@ class CustomUserChangeForm(UserChangeForm):
 
     class Meta:
         model = CustomUser
-        fields = ("email",)
+        fields = ("email",) #Field to edit in django admin
 
 
 

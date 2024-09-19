@@ -12,8 +12,8 @@ class UsersManagersTests(TestCase):
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
         try:
-            # username is None for the AbstractUser option
-            # username does not exist for the AbstractBaseUser option
+            # username is not None for the AbstractUser option
+            # username exists for the AbstractBaseUser option
             self.assertIsNotNone(user.username)
         except AttributeError:
             pass
@@ -32,8 +32,8 @@ class UsersManagersTests(TestCase):
         self.assertTrue(admin_user.is_staff)
         self.assertTrue(admin_user.is_superuser)
         try:
-            # username is None for the AbstractUser option
-            # username does not exist for the AbstractBaseUser option
+            # username is not None for the AbstractUser option
+            #exists for the AbstractBaseUser option
             self.assertIsNotNone(admin_user.username)
         except AttributeError:
             pass

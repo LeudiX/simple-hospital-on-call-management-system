@@ -23,7 +23,7 @@ def register(request):
                 user.set_password(password1)
                 user.save()
                 date_output = birthdate.strftime("%Y-%m-%d")
-                messages.success(request,f'Your account has been succesfully created {username} at {date_output}! Proceed to Log In')
+                messages.success(request,f'Your account has been succesfully created {username},  birthdate {date_output}! Proceed to Log In')
                 return redirect('login') #Redirect to the login page
             else:
                 #Handling password mismatch error
@@ -48,6 +48,6 @@ def profile(request,pk):
     context = {
         'form':form,
         'age':age,
-        'birthdate':custom_user.birth_date
+        'birthdate':custom_user.birthdate
         }
     return render(request,'users/profile.html',context)
