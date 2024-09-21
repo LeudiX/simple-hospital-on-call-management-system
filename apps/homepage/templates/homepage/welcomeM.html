@@ -1,5 +1,5 @@
 {% load static %}
-
+{% if  user.is_authenticated %}
 <div class="container text-right" id="header"> 
     <div id="welcome-message" class="welcomeM">
         <h2>Welcome to Angelical Saviours</h2>
@@ -17,7 +17,7 @@
         });
     </script>
 </div>
-
+{% endif %}
 <!--Custom styles for welcome message-->
 <style>
     .welcomeM {
