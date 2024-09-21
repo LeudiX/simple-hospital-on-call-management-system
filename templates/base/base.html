@@ -32,12 +32,19 @@
         <p><br> PWeb Django Course Demostration</p>
     </div>
  
+    <!--Dynamic Navbar-->
     {% block navbar %}
     {% endblock %}
 
+    <!--Animated welcome message-->
+    {% block welcomeM %}
+    {% endblock %}
+
+    <!--Carousel-->
     {% block carousel %}
     {% endblock %}
     
+    <!--Main content-->
     <main role="main" class="container">
         <div class="row">
           <div class="col-md-12 my-3">
@@ -54,7 +61,7 @@
         </div>
     </main>
 
-
+    <!--Footer-->
     {% block footer %}
     {% endblock %}
 
