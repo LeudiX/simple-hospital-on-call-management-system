@@ -21,7 +21,7 @@
 
                 <!--Handling authorization with Django-->
                 {% if user.is_authenticated %}
-                    {% if user.is_doctor %}
+                    {% if user.is_doctor or user.is_patient %}
                         <li class="list" id="consultations">
                             <a href="#"><!--Go to consultations URL-->
                                 <span class="icon">
@@ -30,15 +30,15 @@
                                 <span class="text">Consultations</span>
                             </a>
                         </li>
+                        <li class="list " id="profile">
+                            <a href="{% url 'profile' %}"><!--Go to Profile URL-->
+                                <span class="icon">
+                                    <i class="fa fa-user-circle-o fa-lg fa-fw" aria-hidden="true"></i>
+                                </span>
+                                <span class="text">Profile</span>
+                            </a>
+                        </li>
                     {% endif %}
-                    <li class="list " id="profile">
-                        <a href="{% url 'profile' %}"><!--Go to Profile URL-->
-                            <span class="icon">
-                                <i class="fa fa-user-circle-o fa-lg fa-fw" aria-hidden="true"></i>
-                            </span>
-                            <span class="text">Profile</span>
-                        </a>
-                    </li>
                      <!--Updated since Django doesn't allow this operation
                     be handled by a GET Method (Security Issues)-->
                     <li class="list " id="logout">

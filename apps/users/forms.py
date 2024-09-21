@@ -32,7 +32,7 @@ class RegistrationForm(UserCreationForm):
         
     class Meta:
         model = CustomUser
-        fields = ('username', 'email','user_type','birthdate','gender') # Fields to edit
+        fields = ('username','first_name','last_name', 'email','user_type','birthdate','gender') # Fields to edit
 
 class CustomUserChangeForm(UserChangeForm):
 
@@ -45,7 +45,7 @@ class CustomUserChangeForm(UserChangeForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = CustomUser
-        fields = ['username', 'email','birthdate','gender'] # Fields to edit
+        fields = ['username','first_name','last_name', 'email','birthdate','gender'] # Fields to edit
         widgets = {
             'birthdate': forms.DateInput(attrs={'type': 'date'}), # Improved date picker
         }

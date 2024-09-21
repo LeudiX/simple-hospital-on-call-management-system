@@ -3,7 +3,7 @@
 <!-- Carousel -->
 <div class="row">
     <div class="col-md-4">
-        {% if user.is_authenticated %} 
+        {% if user.is_authenticated and not user.is_superuser %} 
             <div class="d-flex px-5 mb-5">
                 <h5 class="text-success justify-content-start">
                         User:
