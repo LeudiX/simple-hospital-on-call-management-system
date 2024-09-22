@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import RegistrationForm, CustomUserChangeForm
-from .models import CustomUser
+from .models import CustomUser,Doctor,Patient,UrgencyPatient,CommonPatient
 
 # Telling the admin to use these forms by subclassing UserAdmin
 class CustomUserAdmin(UserAdmin):
@@ -29,3 +29,5 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(Doctor)
+admin.site.register(Patient)

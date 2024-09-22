@@ -39,7 +39,7 @@ class Consultation(models.Model):
         ).exclude(pk=self.pk if self.pk else None)  # Exclude the current appointment if editing
 
         if overlapping_appointments.exists():
-            raise ValidationError(f"Dr. {self.doctor} already has an appointment scheduled for this time.")
+            raise ValidationError(f"Dr. {self.doctor.first_name} already has an appointment scheduled for this time.")
 
     def save(self, *args, **kwargs):
         self.full_clean()  # Run model validation before saving

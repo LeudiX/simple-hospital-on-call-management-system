@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm,UserChangeForm
 from django.contrib.auth import password_validation
-from .models import CustomUser
+from .models import CustomUser, Doctor, Patient
+from django.core.validators import MinValueValidator,MaxValueValidator
 
 class RegistrationForm(UserCreationForm):
     
@@ -40,8 +41,7 @@ class CustomUserChangeForm(UserChangeForm):
         model = CustomUser
         fields = ("email",) #Field to edit in django admin
 
-
-
+# Update Profile form
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = CustomUser
@@ -49,3 +49,25 @@ class ProfileForm(forms.ModelForm):
         widgets = {
             'birthdate': forms.DateInput(attrs={'type': 'date'}), # Improved date picker
         }
+        
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(ProfileForm, self).__init__(*args, **kwargs)
+
+        if user and user.user_type == 'doctor':
+            
+            self.fields['specialty'] = forms.ChoiceField(choices=Doctor.SPECIALTIES)
+            self.fields['experience'] = forms.IntegerField(min_value=0, max_value=50)
+
+        elif user and user.user_type == 'patient':
+            self.fields['patient_type'] = forms.ChoiceField(choices=Patient.PATIENT_TYPE_CHOICES)
+            self.fields['temperature'] = forms.DecimalField(max_digits=5,decimal_places=2)
+            self.fields['pulse'] = forms.IntegerField(validators=[MinValueValidator(40),MaxValueValidator(120)])
+            self.fields['systolic_pressure'] = forms.DecimalField(max_digits=5,decimal_places=2)
+            self.fields['diastolic_pressure'] = forms.DecimalField(max_digits=5,decimal_places=2)
+            
+    def clean_experience(self):
+        experience = self.cleaned_data.get('experience')
+        if experience is None:
+            raise forms.ValidationError("Experience is required.")
+        return experience    

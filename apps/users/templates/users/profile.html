@@ -8,7 +8,14 @@
 
 {% block content %}
     <div class="row g-3 text-white">
-        <h1>My Profile</h1>
+        
+        <h1>
+            {% if user.is_doctor %}
+                Doctor's {{user.first_name}} Profile
+            {% else %}
+                Patient's {{user.first_name}} Profile
+            {% endif %}
+        </h1>
         <div class="col-sm-6">
             <form method="post">
                 {% csrf_token %} {{ form|crispy }}
@@ -28,7 +35,16 @@
             <p><strong>Birthdate:</strong> {{ user.birthdate }}</p>
             <p><strong>Age:</strong> {{ age }}</p>
             <p><strong>Gender:</strong> {{ user.gender }}</p>
+            {% if user.is_doctor %}
+            <p><strong>Specialty:</strong> {{ doctor.specialty }}</p>
+            <p><strong>Experience:</strong> {{ doctor.experience }}</p>
             <!--<p><strong>Address:</strong> {{ user.address }}</p>-->
+            {% else %}
+            <p><strong>Temperature:</strong> {{ patient.temperature }}</p>
+            <p><strong>Pulse:</strong> {{ patient.pulse }}</p>
+            <p><strong>Systolic Pressure:</strong> {{ patient.systolic_pressure }}</p>
+            <p><strong>Diastolic Pressure:</strong> {{ patient.diastolic_pressure }}</p>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

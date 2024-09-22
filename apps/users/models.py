@@ -106,7 +106,6 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return f"Name: {self.first_name} {self.last_name} ({self.user_type})"
     
-    
     """Calculate the age of the user in years."""
     def get_age(self):
         age=datetime.date.today()-self.birthdate 
@@ -121,16 +120,16 @@ class CustomUser(AbstractUser):
 
 """_Using Multi-table Inheritance and Proxy Models for handle the complex User Data Model and enhance future mantainment and scalability_"""
 
-# Patient Class(inherits from CustomUser)
-class Patient(CustomUser):
+# Patient Class
+class Patient(models.Model):
     
     PATIENT_TYPE_CHOICES = (
         ('urgency', 'Urgency'),
         ('common', 'Common'),
     )
     
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
     patient_type = models.CharField(max_length=50, choices=PATIENT_TYPE_CHOICES)
-    
 # Temperature in degrees Celsius
     temperature = models.DecimalField(
                                     max_digits=5,
@@ -162,13 +161,13 @@ class Patient(CustomUser):
     diastolic_pressure = models.DecimalField(
         verbose_name="Diastolic Blood Pressure",
         help_text="Patient's diastolic blood pressure in mmHg",
-         max_digits=5,
+        max_digits=5,
         decimal_places=2,
         validators=[MinValueValidator(60),MaxValueValidator(90)],
         null=True,  # Allows the field to be null if blood pressure is unknown
         blank=True,  # Allows the field to be blank in forms
     )
-      
+       
     """_The constructor of the Patient class initializes the vital sign fields_
     """
     def __init__(self,temperature,pulse,systolic_pressure,diastolic_pressure):
@@ -187,11 +186,18 @@ class Patient(CustomUser):
     def __str__(self):
         return f"Patient {self.first_name} {self.last_name} ({self.patient_type})"
     
+    def is_urgency(self):
+        return self.patient_type == 'urgency'
+    
+    
     class Meta:
         verbose_name = "Patient"
         verbose_name_plural = "Patients"
+    
+    def save(self, *args, **kwargs):
+        print(f"Saving Patient: {self.user.first_name}, Temperature:{self.temperature}, Pulse: {self.experience}, Blood Pressure: {self.systolic_pressure}/{self.diastolic_pressure}")
+        super(Patient, self).save(*args, **kwargs)
         
-
 # CommonPatient Class(inherits from Patient)    
 class CommonPatient(Patient):
 
@@ -243,9 +249,8 @@ class UrgencyPatient(Patient):
         admission_status = "Admitted" if self.admitted else "Not Admitted" # Determines the admission status based on the admitted field using a ternary operator
         return f"Urgency Patient - Main Symptom: {self.main_symptom}, Vital Signs: {vital_signs}, Admission Status: {admission_status}"
         
-
-# Doctor Class (inherits from CustomUser)        
-class Doctor(CustomUser):
+# Doctor Class        
+class Doctor(models.Model):
     
     SPECIALTIES = (
         ('General Practice', 'General Practice'),
@@ -259,15 +264,21 @@ class Doctor(CustomUser):
         # Add more specialties as needed
     )
     
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
     specialty = models.CharField(max_length=100,verbose_name='Specialty',help_text="Doctor's specialty", choices=SPECIALTIES)
-    experience = models.PositiveIntegerField(
+    experience = models.IntegerField(
         validators=[MinValueValidator(0),MaxValueValidator(50)],
         verbose_name="Experience",
-        help_text="Doctor's Years of Experience",)
+        help_text="Doctor's Years of Experience",
+        null=True,
+        blank=True)
     
     def __str__(self):
-        return f"Dr. {self.first_name} {self.last_name} ({self.specialty})"
-    
+        return f"Dr. {self.user.first_name} {self.user.last_name} ({self.specialty}) with {self.experience} years of experience in the field"
     class Meta:
         verbose_name = "Doctor"
         verbose_name_plural = "Doctors"
+    
+    def save(self, *args, **kwargs):
+        print(f"Saving Doctor: {self.user.first_name}, Specialty:{self.specialty},  Experience: {self.experience}")
+        super(Doctor, self).save(*args, **kwargs)
