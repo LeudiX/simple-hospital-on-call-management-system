@@ -168,13 +168,6 @@ class Patient(models.Model):
         blank=True,  # Allows the field to be blank in forms
     )
        
-    """_The constructor of the Patient class initializes the vital sign fields_
-    """
-    def __init__(self,temperature,pulse,systolic_pressure,diastolic_pressure):
-        self.temperature = temperature
-        self.pulse = pulse
-        self.systolic_pressure = systolic_pressure
-        self.diastolic_pressure = diastolic_pressure
     
     """_Returns a summary of the patient's vital signs. This promotes encapsulation by providing a 
         clear interface to access the vital signs_
@@ -183,8 +176,9 @@ class Patient(models.Model):
         # Returns a summary of the patient's vital signs
         return f"Temperature: {self.temperature}, Pulse: {self.pulse}, Blood Pressure: {self.systolic_pressure}/{self.diastolic_pressure}"
     
+    #Used by Django Admin when registered the Patient model
     def __str__(self):
-        return f"Patient {self.first_name} {self.last_name} ({self.patient_type})"
+        return f"Patient {self.user.first_name} {self.user.last_name} ({self.patient_type})"
     
     def is_urgency(self):
         return self.patient_type == 'urgency'
@@ -195,7 +189,7 @@ class Patient(models.Model):
         verbose_name_plural = "Patients"
     
     def save(self, *args, **kwargs):
-        print(f"Saving Patient: {self.user.first_name}, Temperature:{self.temperature}, Pulse: {self.experience}, Blood Pressure: {self.systolic_pressure}/{self.diastolic_pressure}")
+        print(f"Saving Patient: {self.user.first_name}, Temperature:{self.temperature}, Pulse: {self.pulse}, Blood Pressure: {self.systolic_pressure}/{self.diastolic_pressure}")
         super(Patient, self).save(*args, **kwargs)
         
 # CommonPatient Class(inherits from Patient)    
@@ -273,6 +267,7 @@ class Doctor(models.Model):
         null=True,
         blank=True)
     
+    # Used by Django Admin when registered the Doctor model
     def __str__(self):
         return f"Dr. {self.user.first_name} {self.user.last_name} ({self.specialty}) with {self.experience} years of experience in the field"
     class Meta:

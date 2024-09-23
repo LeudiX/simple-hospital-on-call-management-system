@@ -42,10 +42,14 @@ class CreateConsultationView(LoginRequiredMixin, CreateView):
     template_name = 'homepage/consultations.html'
     success_url = '/consultations/'
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user
-        return kwargs
-
-create_consultation_view = CreateConsultationView.as_view()
+    def form_valid(self, form):
+        # Assign the current doctor to the consultation
+        form.instance.doctor = self.request.user
+        form.instance.consultation_date = datetime.timezone.now()  # Set the current date
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patient'] = Patient.objects.all()  # Get all patients
+        return context
 

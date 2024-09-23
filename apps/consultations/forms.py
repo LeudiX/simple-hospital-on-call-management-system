@@ -20,11 +20,5 @@ class ConsultationForm(forms.ModelForm):
         model = Consultation
         fields = ['patient', 'doctor', 'consultation_date', 'notes']
     
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user')
-        super(ConsultationForm, self).__init__(*args, **kwargs)
-        self.fields['patient'].queryset = Patient.objects.filter(username='Titongo')
-        self.fields['doctor'] = forms.ModelChoiceField(
-            queryset=Doctor.objects.filter(id=user.id), 
-            initial=user.id, widget=forms.HiddenInput()) 
+    
     
