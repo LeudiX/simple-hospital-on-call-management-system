@@ -13,7 +13,7 @@ class Consultation(models.Model):
     notes = models.TextField(max_length=200,blank=True, null=True)  # Optional notes field
 
     def __str__(self):
-        return f"Doctor: {self.doctor.first_name} in consultation with {self.patient.first_name} on {self.consultation_date.strftime('%Y-%m-%d')}"
+        return f"Doctor: {self.doctor.user.first_name} in consultation with {self.patient.user.first_name} on {self.consultation_date.strftime('%Y-%m-%d')}"
     
     class Meta:
         verbose_name = "Consultation"
@@ -26,8 +26,12 @@ class Consultation(models.Model):
     def clean(self):
         # Add custom validation here if needed, e.g., to prevent scheduling
         # consultations in the past or overlapping appointments.
-        if self.consultation_date < timezone.now():
-            raise ValidationError("Consultation date cannot be in the past.")
+        
+        #if self.consultation_date < timezone.now():
+            
+        print(f'Current timezone: {timezone.now()}')
+        print(f'Current consultation_date: {self.consultation_date}')
+            #raise ValidationError("Consultation date cannot be in the past.")
         
         # Check for overlapping appointments for the doctor
         overlapping_appointments = Consultation.objects.filter(

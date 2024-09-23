@@ -9,7 +9,7 @@ from .forms import ConsultationForm
 from django.contrib.auth import get_user_model
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView
+from django.views.generic import CreateView,ListView
 
 # Consultations views.
 class home_page(TemplateView):
@@ -43,13 +43,28 @@ class CreateConsultationView(LoginRequiredMixin, CreateView):
     success_url = '/consultations/'
 
     def form_valid(self, form):
+        user = self.request.user
         # Assign the current doctor to the consultation
-        form.instance.doctor = self.request.user
-        form.instance.consultation_date = datetime.timezone.now()  # Set the current date
+        form.instance.doctor = Doctor.objects.get(user=user)
+        #form.instance.consultation_date = datetime.timezone.now  # Set the current date
         return super().form_valid(form)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['patient'] = Patient.objects.all()  # Get all patients
         return context
+
+class ConsultationListView(LoginRequiredMixin, ListView):
+    model = Consultation
+    template_name = 'homepage/consultations.html'
+
+    def get_queryset(self):
+        # Filter consultations based on the logged-in user being a doctor
+        return Consultation.objects.filter(doctor=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patients'] = Patient.objects.all()  # Get all patients
+        return context
+
 
