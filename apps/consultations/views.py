@@ -39,7 +39,7 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
             consultation = form.save(commit=False)
             consultation.doctor = Doctor.objects.get(user=request.user) #Getting the current doctor in session
             consultation.save()
-            messages.success(request,f'Doctor: {consultation.doctor.user.get_full_name()} consultation successfully achieved at {consultation.consultation_date.strftime('%Y-%m-%d')}')
+            messages.success(request,f'Dr: {consultation.doctor.user.get_full_name()} consultation successfully achieved at {consultation.consultation_date.strftime('%Y-%m-%d')}')
             return redirect(reverse('consultations'))  # Consultations URL name
         # If the form is not valid, return the same context with the form errors
         context = self.get_context_data()

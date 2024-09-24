@@ -16,8 +16,7 @@ class ConsultationForm(forms.ModelForm):
     class Meta:
         model = Consultation
         fields = ['patient', 'doctor', 'consultation_date', 'notes']
-    
-            
+     
     def clean_notes(self):
         notes = self.cleaned_data.get('notes')
         if notes is None:
