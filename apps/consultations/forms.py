@@ -7,18 +7,20 @@ from apps.users.models import Doctor, Patient
 
 class ConsultationForm(forms.ModelForm):
    
-    """"
-    patient_name = forms.ModelChoiceField(
-        label='Patient',
-        help_text='Select the patient',
-        required =True,
-        queryset= Patient.objects.filter(user_type='patient'),
-        empty_label="Nothing here"
+    patient = forms.ModelChoiceField(
+        queryset=Patient.objects.all(),
+        help_text='Choose the patient',
         )
-    """
+    notes  = forms.Textarea(attrs={'placeholder':'Patient treatment'})
+   
     class Meta:
         model = Consultation
         fields = ['patient', 'doctor', 'consultation_date', 'notes']
     
-    
+            
+    def clean_notes(self):
+        notes = self.cleaned_data.get('notes')
+        if notes is None:
+            raise forms.ValidationError("Notes is required.")
+        return notes
     

@@ -17,13 +17,11 @@
                 </form>
             </div>
             <div class="col-sm px-5">
-                <h4>Consultation's Historial</h4>
-            </div>
-            <div class="col-sm px-5">
-                <h4>Details</h4>
+                <h4>Patient Consultation's Historial</h4>
                 <ul>
+                    <!--Object_List reference is defined in views as a context variable-->
                     {% for consultation in object_list %}
-                    <li>
+                    <li class='py-2'>
                         <b>Patient:</b> {{ consultation.patient.user.get_full_name }}<br>
                         <b>Date:</b> {{ consultation.consultation_date }}<br>
                         <b>Notes:</b> {{ consultation.notes }}

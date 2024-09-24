@@ -176,13 +176,13 @@ class Patient(models.Model):
         # Returns a summary of the patient's vital signs
         return f"Temperature: {self.temperature}, Pulse: {self.pulse}, Blood Pressure: {self.systolic_pressure}/{self.diastolic_pressure}"
     
-    #Used by Django Admin when registered the Patient model
+    # Used by Django Admin when registered the Patient model
+    # Used by Django forms when accessing objets of this type
     def __str__(self):
-        return f"Patient {self.user.first_name} {self.user.last_name} ({self.patient_type})"
+        return f"{self.user.first_name} {self.user.last_name} ({self.patient_type.capitalize()})"
     
     def is_urgency(self):
         return self.patient_type == 'urgency'
-    
     
     class Meta:
         verbose_name = "Patient"
@@ -267,9 +267,10 @@ class Doctor(models.Model):
         null=True,
         blank=True)
     
-    # Used by Django Admin when registered the Doctor model
+    # Used by Django Admin when registered this model
+    # Used by Django forms when accessing objects of this type
     def __str__(self):
-        return f"Dr. {self.user.first_name} {self.user.last_name} ({self.specialty}) with {self.experience} years of experience in the field"
+        return f"Dr.{self.user.first_name} {self.user.last_name} "
     class Meta:
         verbose_name = "Doctor"
         verbose_name_plural = "Doctors"

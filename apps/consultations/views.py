@@ -2,6 +2,7 @@ import datetime
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from django.views.generic import TemplateView
 from apps.consultations.models import Consultation
 from apps.users.models import CustomUser, Doctor, Patient
@@ -15,56 +16,32 @@ from django.views.generic import CreateView,ListView
 class home_page(TemplateView):
     template_name = 'homepage/home.html'
 
-"""
-@login_required
-def consultation_register(request):
-   
-    if request.method == 'POST': 
-        form = ConsultationForm(request.POST,instance=request.user) # Access linked user profile
+
+class CreateConsultationView(LoginRequiredMixin,TemplateView):
+    template_name = 'homepage/consultations.html'  # Consultations current template
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Providing the list of consultations as 'object_list'
+        context['object_list'] = Consultation.objects.filter(
+            doctor=Doctor.objects.get(user=self.request.user)
+        )
+        # Providing the form
+        context['form'] = ConsultationForm()
+        # Get all patients
+        context['patients'] = Patient.objects.all()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        # Handling form submission
+        form = ConsultationForm(request.POST)
         if form.is_valid():
             consultation = form.save(commit=False)
-            patient = CustomUser.objects.filter(user_type='patient')
-            doctor = form.cleaned_data['doctor']  
+            consultation.doctor = Doctor.objects.get(user=request.user) #Getting the current doctor in session
             consultation.save()
-            messages.success(request,f'Your consultation has been succesfully created Ms. {doctor}!')
-            return redirect('consultations')
-    else:
-        form = ConsultationForm(instance =request.user)
-    context = {
-            'form':form
-        }
-    return render(request,'homepage/consultations.html',context)
-
-"""
-class CreateConsultationView(LoginRequiredMixin, CreateView):
-    model = Consultation
-    form_class = ConsultationForm
-    template_name = 'homepage/consultations.html'
-    success_url = '/consultations/'
-
-    def form_valid(self, form):
-        user = self.request.user
-        # Assign the current doctor to the consultation
-        form.instance.doctor = Doctor.objects.get(user=user)
-        #form.instance.consultation_date = datetime.timezone.now  # Set the current date
-        return super().form_valid(form)
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['patient'] = Patient.objects.all()  # Get all patients
-        return context
-
-class ConsultationListView(LoginRequiredMixin, ListView):
-    model = Consultation
-    template_name = 'homepage/consultations.html'
-
-    def get_queryset(self):
-        # Filter consultations based on the logged-in user being a doctor
-        return Consultation.objects.filter(doctor=self.request.user)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['patients'] = Patient.objects.all()  # Get all patients
-        return context
-
-
+            messages.success(request,f'Doctor: {consultation.doctor.user.get_full_name()} consultation successfully achieved at {consultation.consultation_date.strftime('%Y-%m-%d')}')
+            return redirect(reverse('consultations'))  # Consultations URL name
+        # If the form is not valid, return the same context with the form errors
+        context = self.get_context_data()
+        context['form'] = form
+        return self.render_to_response(context)
