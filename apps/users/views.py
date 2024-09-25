@@ -69,6 +69,10 @@ def profile_view(request):
     user = request.user
     initial_data = {}
     
+    # Age Calculation process
+    User = get_user_model() # Retrieving the user model, ensuring compatibility with custom user models
+    age = User.objects.get(pk=request.user.pk).get_age() # Fetching AGE from CustomUser model 
+    
     if user.user_type == 'doctor':
         try:
             doctor_profile = Doctor.objects.get(user=user)
@@ -111,11 +115,13 @@ def profile_view(request):
     if user.user_type =='doctor':
             context = {
             'form':form,
+            'age':age,
             'doctor':doctor_profile, #Accessing current doctor info
             }
     elif user.user_type =='patient':
             context = {
             'form':form,
+            'age':age,
             'patient':patient_profile, #Accessing current patient info
             }
         
