@@ -55,8 +55,8 @@ class ProfileForm(forms.ModelForm):
         super(ProfileForm, self).__init__(*args, **kwargs)
 
         if user and user.user_type == 'doctor':
-            
-            self.fields['specialty'] = forms.ChoiceField(choices=Doctor.SPECIALTIES)
+            # Modified the specialty field to show "Choose a patient"
+            self.fields['specialty'] = forms.ChoiceField(choices=[('','Choose your specialty')]+ list(Doctor.SPECIALTIES),required=True)
             self.fields['experience'] = forms.IntegerField(min_value=0, max_value=50)
 
         elif user and user.user_type == 'patient':

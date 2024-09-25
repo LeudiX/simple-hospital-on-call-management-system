@@ -29,7 +29,7 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
         ).exists()
 
         if recent_consultation:
-            form.add_error('patient', 'Patient has been consulted within the last 30 minutes.')
+            messages.warning('patient', 'Patient has been consulted within the last 30 minutes.')
             return self.form_invalid(form)
 
         return super().form_valid(form)
@@ -68,7 +68,20 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
     """
     def post(self, request, *args, **kwargs):
         
-        doctor = Doctor.objects.get(user=request.user) #Getting the current doctor in session
+        #doctor = Doctor.objects.get(user=request.user) #Getting the current doctor in session
+        
+        # Check if the user has a Doctor profile (PLAN A)
+        try:
+           doctor = Doctor.objects.get(user=request.user) #Getting the current doctor in session
+        except Doctor.DoesNotExist:
+            messages.warning(request, "You must complete your profile before creating a consultation.")
+            return redirect('profile')  # Redirect to the profile completion page
+            
+        # Optionally, check if the profile is fully completed (PLAN B)
+        if not doctor.is_profile_complete():
+            messages.warning(request, "You must complete your profile before creating a consultation.")
+            return redirect('profile_completion_page')  # Redirect to the profile completion page
+        
         # Handling form submission
         form = ConsultationForm(request.POST)
         if form.is_valid():

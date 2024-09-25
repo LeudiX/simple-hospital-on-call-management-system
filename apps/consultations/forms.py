@@ -25,7 +25,7 @@ class ConsultationForm(forms.ModelForm):
         recent_patient_ids = Consultation.objects.filter(
             consultation_date__gte=timezone.now() - timezone.timedelta(minutes=30)
         ).values_list('patient_id', flat=True)
-        print('f{recent_patient_ids}')  #Debugging porposes only
+        print(f'{recent_patient_ids}')  #Debugging porposes only
         return Patient.objects.exclude(user__id__in=recent_patient_ids)
          
     def clean_notes(self):

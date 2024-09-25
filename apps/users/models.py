@@ -181,6 +181,11 @@ class Patient(models.Model):
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name} ({self.patient_type.capitalize()})"
     
+    # Checking patient's profile completitud
+    def is_profile_complete(self):
+        return bool(self.temperature and self.pulse and self.systolic_pressure and self.diastolic_pressure)  
+    
+    # Is patient reported as urgency?
     def is_urgency(self):
         return self.patient_type == 'urgency'
     
@@ -274,6 +279,10 @@ class Doctor(models.Model):
     class Meta:
         verbose_name = "Doctor"
         verbose_name_plural = "Doctors"
+    
+    # Checking doctor's profile completitud
+    def is_profile_complete(self):
+        return bool(self.specialty and self.experience)   
     
     def save(self, *args, **kwargs):
         print(f"Saving Doctor: {self.user.first_name}, Specialty:{self.specialty},  Experience: {self.experience}")
