@@ -27,8 +27,22 @@
                         <b>Notes:</b> {{ consultation.notes }}
                     </li>
                     {% endfor %}
-                </ul>
-                  
+                </ul>   
+            </div>
+        {% elif user.is_patient %}
+            <div class="col-sm-6">
+                <h4>Patient Consultation's Historial</h4>
+                <ul>
+                    <!--Object_List reference is defined in views as a context variable-->
+                    {% for consultation in object_list %}
+                    <li class='py-2'>
+                        <b>Patient:</b> {{ consultation.patient.user.get_full_name }}<br>
+                        <b>Consultated by:</b> {{ consultation.doctor.user.get_full_name }}<br>
+                        <b>Date:</b> {{ consultation.consultation_date }}<br>
+                        <b>Notes:</b> {{ consultation.notes }}
+                    </li>
+                    {% endfor %}
+                </ul>   
             </div>
         {% endif %}
     </div>
