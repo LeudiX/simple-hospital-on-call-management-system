@@ -55,7 +55,7 @@ class ProfileForm(forms.ModelForm):
         super(ProfileForm, self).__init__(*args, **kwargs)
 
         if user and user.user_type == 'doctor':
-            # Modified the specialty field to show "Choose a patient"
+            # Modified the specialty field to show "Choose a patient"(Casting to list to avoid tuples concatenation problem )
             self.fields['specialty'] = forms.ChoiceField(choices=[('','Choose your specialty')]+ list(Doctor.SPECIALTIES),required=True)
             self.fields['experience'] = forms.IntegerField(min_value=0, max_value=50)
 
