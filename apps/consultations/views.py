@@ -46,10 +46,9 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
             try:
                 # Get the current doctor from the request (assuming you have access to it)
                 doctor = Doctor.objects.get(user=self.request.user) # This assumes the doctor is the logged-in user
-                # Providing the patient in consultation with this doctor
         
-                # Providing the list of consultations as 'object_list'
-                context['object_list'] = Consultation.objects.filter(doctor=doctor)
+                # Providing the list of consultations as 'consultations'
+                context['consultations'] = Consultation.objects.filter(doctor=doctor)
                 
                 #print(f'{context['object_list']}')
                         
@@ -58,7 +57,7 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
                 most_recent_consultation = Consultation.objects.filter(doctor=doctor).order_by('-consultation_date').first()
                 
                 if most_recent_consultation:
-                    # Get the corresponding PatientConsultation for the most recent consultation
+                    # Get the corresponding PatientConsultation for the Doctor most recent consultation
                     patient_consultation = PatientConsultation.objects.filter(consultation = most_recent_consultation).first()
                     
                     if patient_consultation:                  
@@ -70,17 +69,29 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
             
             except Doctor.DoesNotExist:
                     doctor = None
-                    context['object_list'] = []
+                    context['consultations'] = []
                     context['patient'] = None
                     
         elif user.user_type == 'patient':
             try:
                 # Get the current doctor from the request (assuming you have access to it)
                 patient = Patient.objects.get(user=user)
-                 # Providing the list of consultations as 'object_list'
-                context['object_list'] = PatientConsultation.objects.filter(patient=patient)
+                               
+                # Providing the list of consultations as 'patient_consultation'
+                context['patient_consultation'] = PatientConsultation.objects.filter(patient=patient)
+                
+                # Get the corresponding PatientConsultation for the Patient most recent consultation
+                most_recent_consultation = PatientConsultation.objects.filter(patient=patient).first()
+            
+                if most_recent_consultation:
+                    #print(f'{most_recent_consultation.consultation.doctor.user.get_full_name()}') [Debugging purposes only]
+                    context['consultations']= most_recent_consultation.consultation
+                else:
+                    context['consultations']= None
             except Patient.DoesNotExist:
                 patient = None
+                context['patient_consultation'] = []
+                context['consultations'] = None
           
         # Initialize the form with the current doctor
         context['form'] = ConsultationForm()
@@ -126,9 +137,9 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
             if existing_consultation:
                 messages.warning(request, f"A consultation with {patient} on {consultation.consultation_date.strftime('%Y-%m-%d')} already exists in this moment. Wait 5 mins")
                 context = self.get_context_data()
-                context['form'] = patient_consultation_form
+                context['patient_consultation_form'] = patient_consultation_form
                 return self.render_to_response(context)
-            
+                    
             # If no duplicate is found, the code proceeds to save the consultation with the doctor as before
             consultation.doctor = doctor
             consultation.status = 'in-progress'
