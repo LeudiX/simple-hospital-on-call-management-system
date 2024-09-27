@@ -12,7 +12,17 @@
         {% if user.is_doctor %}
             <div class="col-sm-6">
                 <form method="post">
-                    {% csrf_token %} {{ form|crispy }}
+                    {% csrf_token %}
+                    
+                    {{ patient_consultation_form|crispy }}<!-- Patient Consultation Form -->
+                    {{form|crispy}} <!-- Main Consultation Form -->
+                    <!-- Additional forms based on consultation type -->
+                    {% if consultation_type == 'urgency' %}
+                      {{ urgency_consultation_form|crispy}}
+                    {% elif consultation_type == 'common' %}
+                      {{ common_consultation_form|crispy}}
+                    {% endif %}
+                    {{ vital_signs_form|crispy }} <!-- Vital Signs Form -->
                     <button type="submit" class="btn btn-success">Create Consultation</button>
                 </form>
             </div>
@@ -22,7 +32,7 @@
                     <!--Object_List reference is defined in views as a context variable-->
                     {% for consultation in object_list %}
                     <li class='py-2'>
-                        <b>Patient:</b> {{ consultation.patient.user.get_full_name }}<br>
+                        <b>Patient:</b> {{ consultation.user.get_full_name }}<br>
                         <b>Date:</b> {{ consultation.consultation_date }}<br>
                         <b>Notes:</b> {{ consultation.notes }}
                     </li>

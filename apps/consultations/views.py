@@ -1,11 +1,12 @@
 import datetime
-from django.shortcuts import  redirect
+from django.shortcuts import  redirect, render
 from django.contrib import messages
 from django.urls import reverse
 from django.views.generic import TemplateView
 from apps.consultations.models import Consultation
 from apps.users.models import CustomUser, Doctor, Patient
-from .forms import ConsultationForm
+from apps.consultations.models import PatientConsultation
+from .forms import CommonConsultationForm, ConsultationForm, PatientConsultationForm, UrgencyConsultationForm, VitalSignsForm
 from datetime import timedelta
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView,ListView
@@ -17,25 +18,25 @@ class home_page(TemplateView):
 
 class CreateConsultationView(LoginRequiredMixin,TemplateView):
     template_name = 'homepage/consultations.html'  # Consultations current template
-
-    """_Some validations applied over the form_
-    """
-    def form_valid(self, form):
-        # Check if the patient has been consulted within the last 30 minutes
-        patient = form.cleaned_data['patient']
-        recent_consultation = Consultation.objects.filter(
-            patient=patient,
-            consultation_date__gte=Consultation.consultation_date - timedelta(minutes=30)
-        ).exists()
-
-        if recent_consultation:
-            messages.warning('patient', 'Patient has been consulted within the last 30 minutes.')
-            return self.form_invalid(form)
-
-        return super().form_valid(form)
     
-    """_Context data needed when loading the form (GET) Method_
-    """
+    def get(self, request, *args, **kwargs):
+        # Initialize forms
+        consultation_form = ConsultationForm()
+        patient_consultation_form = PatientConsultationForm()
+        urgency_consultation_form = UrgencyConsultationForm()
+        common_consultation_form = CommonConsultationForm()
+        vital_signs_form = VitalSignsForm()
+        
+        context = {
+            'form': consultation_form,
+            'patient_consultation_form': patient_consultation_form,
+            'urgency_consultation_form': urgency_consultation_form,
+            'common_consultation_form': common_consultation_form,
+            'vital_signs_form': vital_signs_form,
+        }
+        return self.render_to_response(context)
+    
+    """_Context data needed when loading the form (GET) Method_"""
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
@@ -54,18 +55,19 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
                 # Get the current doctor from the request (assuming you have access to it)
                 patient = Patient.objects.get(user=user)
                  # Providing the list of consultations as 'object_list'
-                context['object_list'] = Consultation.objects.filter(patient=patient)
+                context['object_list'] = PatientConsultation.objects.filter(patient=patient)
             except Patient.DoesNotExist:
                 patient = None
           
         # Initialize the form with the current doctor
-        form = ConsultationForm()
-        # Providing the form
-        context['form'] = form
+        context['form'] = ConsultationForm()
+        context['patient_consultation_form'] = PatientConsultationForm()
+        context['urgency_consultation_form'] = UrgencyConsultationForm()
+        context['common_consultation_form'] = CommonConsultationForm()
+        context['vital_signs_form'] = VitalSignsForm()
         return context
 
-    """_Saving consultation with custom logic (POST) Method_
-    """
+    """_Saving consultation with custom logic (POST) Method_"""
     def post(self, request, *args, **kwargs):
         
         #doctor = Doctor.objects.get(user=request.user) #Getting the current doctor in session
@@ -82,16 +84,18 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
             messages.warning(request, "You must complete your profile before creating a consultation.")
             return redirect('profile_completion_page')  # Redirect to the profile completion page
         
-        # Handling form submission
-        form = ConsultationForm(request.POST)
-        if form.is_valid():
-            consultation = form.save(commit=False)
-            patient = form.cleaned_data['patient'] # Getting the current patient selected for consultation
+        # Handling forms submission
+        consultation_form = ConsultationForm(request.POST)
+        patient_consultation_form = PatientConsultationForm(request.POST)
+        
+        if consultation_form.is_valid() and patient_consultation_form.is_valid():
+            consultation = consultation_form.save(commit=False)
+            patient = patient_consultation_form.cleaned_data['patient']  # Getting the current patient selected for consultation
             
             # Check for existing consultation
             existing_consultation = Consultation.objects.filter(
                 doctor=doctor,
-                patient=patient,
+                patientconsultation__patient=patient, # Use the related field patient in PatientConsultation!
                 consultation_date__gte=consultation.consultation_date - timedelta(minutes=5)
             ).first() # Returns the first matching consultation (if any)
             
@@ -99,15 +103,44 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
             if existing_consultation:
                 messages.warning(request, f"A consultation with {patient} on {consultation.consultation_date.strftime('%Y-%m-%d')} already exists in this moment. Wait 5 mins")
                 context = self.get_context_data()
-                context['form'] = form
+                context['form'] = patient_consultation_form
                 return self.render_to_response(context)
             
-            # If no duplicate is found, the code proceeds to save the consultation as before
+            # If no duplicate is found, the code proceeds to save the consultation with the doctor as before
             consultation.doctor = doctor
             consultation.save()
+            
+            # Save the patient consultation
+            patient_consultation = patient_consultation_form.save(commit=False)
+            patient_consultation.consultation = consultation
+            patient_consultation.save()
+            
+             # Handle different consultation types
+            if patient_consultation.consultation_type == 'urgency':
+                urgency_consultation_form = UrgencyConsultationForm(request.POST)
+                if urgency_consultation_form.is_valid():
+                    urgency_consultation = urgency_consultation_form.save(commit=False)
+                    urgency_consultation.consultation = consultation
+                    urgency_consultation.save()
+            elif patient_consultation.consultation_type == 'common':
+                common_consultation_form = CommonConsultationForm(request.POST)
+                if common_consultation_form.is_valid():
+                    common_consultation = common_consultation_form.save(commit=False)
+                    common_consultation.consultation = consultation
+                    common_consultation.save()
+            
+            # Save vital signs
+            vital_signs_form = VitalSignsForm(request.POST)
+            if vital_signs_form.is_valid():
+                vital_signs = vital_signs_form.save(commit=False)
+                vital_signs.consultation = consultation
+                vital_signs.save()
+            
             messages.success(request,f'Dr: {consultation.doctor.user.get_full_name()} consultation with {patient} successfully achieved at {consultation.consultation_date.strftime('%Y-%m-%d')}')
             return redirect(reverse('consultations'))  # Consultations URL name
+        
         # If the form is not valid, return the same context with the form errors
         context = self.get_context_data()
-        context['form'] = form
+        context['form'] = consultation_form
+        context['patient_consultation_form'] = patient_consultation_form
         return self.render_to_response(context)

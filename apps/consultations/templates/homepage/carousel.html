@@ -8,9 +8,9 @@
                 <h5 class="text-success justify-content-start">
                         User:
                         <strong class="text-white">   
-                            {% if user.gender == 'M'%}
+                            {% if user.gender == 'Male'%}
                                 Mr.{{user.username.capitalize}}
-                            {% elif user.gender == 'F' %}
+                            {% elif user.gender == 'Female' %}
                                 Ms.{{user.username.capitalize}}    
                             {% endif %}
                         </strong>

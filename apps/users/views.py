@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from .forms import RegistrationForm,ProfileForm
-from .models import CustomUser, Doctor, Patient
+from .models import Doctor, Patient
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import update_session_auth_hash
 
@@ -83,16 +83,34 @@ def profile_view(request):
     elif user.user_type == 'patient':
         try:
             patient_profile = Patient.objects.get(user=user)
-            initial_data['temperature'] = patient_profile.temperature
-            initial_data['pulse'] = patient_profile.pulse
-            initial_data['systolic_pressure'] = patient_profile.systolic_pressure
-            initial_data['diastolic_pressure'] = patient_profile.diastolic_pressure
+            initial_data['address']=patient_profile.address
+            initial_data['medical_history'] = patient_profile.medical_history
+        except Doctor.DoesNotExist:
+            patient_profile = None
+            """
+            try:
+                common_patient  = CommonPatient.objects.get(user=user)
+                initial_data['diagnosis']= common_patient.diagnosis
+                initial_data['analysis_applied']= common_patient.analysis_applied
+            except CommonPatient.DoesNotExist:
+                common_patient = None;
+            
+            try:
+                urgency_patient = UrgencyPatient.objects.get(user=user)
+                initial_data['main_symptom'] = urgency_patient.main_symptom
+                initial_data['admitted'] = urgency_patient.admitted
+            except  UrgencyPatient.DoesNotExist:
+                urgency_patient = None;    
+            """    
         except Patient.DoesNotExist:
             patient_profile = None
     
     if request.method == 'POST':
-        print(request.POST) # For debugging pourposes only
+        print(f'{request.POST}') # For debugging pourposes only
+       
+        patient_type = request.POST.get('patient_type')  # Get patient_type from POST data
         form = ProfileForm(request.POST, instance=user, user=user,initial=initial_data)
+        
         if form.is_valid():
             form.save()
             if user.user_type == 'doctor':
@@ -100,29 +118,39 @@ def profile_view(request):
                 doctor_profile.specialty = form.cleaned_data['specialty']
                 doctor_profile.experience = form.cleaned_data['experience']
                 doctor_profile.save()
+                messages.success(request,f'Doctor {doctor_profile.user.get_full_name()} profile successfully added to registry!')
             elif user.user_type == 'patient':
                 patient_profile, created = Patient.objects.get_or_create(user=user)
-                patient_profile.patient_type = form.cleaned_data['patient_type']
-                patient_profile.temperature = form.cleaned_data['temperature']
-                patient_profile.pulse = form.cleaned_data['pulse']
-                patient_profile.systolic_pressure = form.cleaned_data['systolic_pressure']
-                patient_profile.diastolic_pressure = form.cleaned_data['diastolic_pressure']
+                patient_profile.address = form.cleaned_data['address']
+                patient_profile.medical_history = form.cleaned_data['medical_history']
                 patient_profile.save()
+                messages.success(request,f'Patient {patient_profile.user.get_full_name()} profile successfully added to registry!')
+                """
+                print(f'Patient profile: {patient_profile.patient_type}')
+                if patient_profile.patient_type =='common':
+                    common_patient,created = CommonPatient.objects.get_or_create(user=user)
+                    common_patient.diagnosis = form.cleaned_data['diagnosis']
+                    common_patient.analysis_applied = form.cleaned_data['analysis_applied']
+                    common_patient.save()
+                    messages.success(request,f'Patient {common_patient.user.get_full_name()} with {common_patient.patient_type} profile successfully added to registry!')
+                
+                elif patient_profile.patient_type == 'urgency':
+                    urgency_patient, created = UrgencyPatient.objects.get_or_create(user=user)
+                    urgency_patient.main_symptom = form.cleaned_data['main_symptom']
+                    urgency_patient.admitted = form.cleaned_data['admitted']
+                    urgency_patient.save()
+                    messages.success(request,f'Patient {urgency_patient.user.get_full_name()}  with {urgency_patient.patient_type} profile successfully added to registry!')
+                """
             return redirect('profile') 
     else:
         form = ProfileForm(instance=user, user=user,initial=initial_data)
         
-    if user.user_type =='doctor':
-            context = {
-            'form':form,
-            'age':age,
-            'doctor':doctor_profile, #Accessing current doctor info
-            }
-    elif user.user_type =='patient':
-            context = {
-            'form':form,
-            'age':age,
-            'patient':patient_profile, #Accessing current patient info
-            }
-        
+    context = {
+        'form':form,
+        'age':age,
+        'doctor':doctor_profile if user.user_type == 'doctor' else None, #Accessing current doctor info if present in session
+        'patient': patient_profile if user.user_type == 'patient' else None, #Accessing current patient info if present in session
+        }
+    
     return render(request, 'users/profile.html',context)
+ 

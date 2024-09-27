@@ -38,18 +38,58 @@
             {% if user.is_doctor %}
             <p><strong>Specialty:</strong> {{ doctor.specialty }}</p>
             <p><strong>Experience:</strong> {{ doctor.experience }}</p>
-            <!--<p><strong>Address:</strong> {{ user.address }}</p>-->
             {% else %}
-            <p><strong>Temperature:</strong> {{ patient.temperature }}</p>
-            <p><strong>Pulse:</strong> {{ patient.pulse }}</p>
-            <p><strong>Systolic Pressure:</strong> {{ patient.systolic_pressure }}</p>
-            <p><strong>Diastolic Pressure:</strong> {{ patient.diastolic_pressure }}</p>
+            <fieldset>
+                <p><strong>Address:</strong> {{ patient.address }}</p>
+                <p><strong>Medical Status:</strong> {{ patient.patient_type.capitalize }}</p>
+                <p><strong>Temperature:</strong> {{ patient.temperature }}</p>
+                <p><strong>Pulse:</strong> {{ patient.pulse }}</p>
+                <p><strong>Systolic Pressure:</strong> {{ patient.systolic_pressure }}</p>
+                <p><strong>Diastolic Pressure:</strong> {{ patient.diastolic_pressure }}</p>
+            </fieldset>
+            
             {% endif %}
         </div>
     </div>
 {% endblock %}
 
 {% block script %}
+
+<script>
+    
+  // Pure JavaScript to dynamically show/hide fields based on patient_type
+  function togglePatientFields() {
+    let patientType = document.getElementById('id_patient_type').value;
+    let commonFields = document.querySelectorAll('.common-fields');
+    let urgencyFields = document.querySelectorAll('.urgency-fields');
+
+    // Hide both sets of fields initially
+    commonFields.forEach(function(field) {
+        field.style.display = 'none';
+    });
+    urgencyFields.forEach(function(field) {
+        field.style.display = 'none';
+    });
+
+    // Show the relevant fields based on patient_type
+    if (patientType === 'common') {
+        commonFields.forEach(function(field) {
+            field.style.display = 'block';
+        });
+    } else if (patientType === 'urgency') {
+        urgencyFields.forEach(function(field) {
+            field.style.display = 'block';
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    togglePatientFields();  // Call function on page load to set correct fields visibility
+
+    // Add event listener to call the function when the patient_type field changes
+    document.getElementById('id_patient_type').addEventListener('change', togglePatientFields);
+});
+</script>
 <script>
     document.getElementById('profile').classList.add('active');
 </script>

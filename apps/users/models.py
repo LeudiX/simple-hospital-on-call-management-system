@@ -18,7 +18,6 @@ This implementation follows best coding practices and SOLID principles:
 5-Dependency Inversion Principle (DIP): The classes depend on abstractions (the Patient class) rather than concrete implementations.
 """
 
-
 # Custom User Models.
 """_Flexible _ and customizable way of handle user creation"""
 
@@ -66,9 +65,9 @@ class CustomUser(AbstractUser):
         ('doctor','Doctor'),
     )
      
-    SEX_FEMALE = 'F'
-    SEX_MALE = 'M'
-    SEX_UNSURE = 'U'
+    SEX_FEMALE = 'Female'
+    SEX_MALE = 'Male'
+    SEX_UNSURE = 'Unsure'
      
     GENDER_CHOICES=(
         (SEX_MALE,'Male'),
@@ -93,7 +92,7 @@ class CustomUser(AbstractUser):
                               error_messages={'unique': 'A user with that email already exits'})
     
     birthdate = models.DateField(verbose_name='birthdate',help_text='Select your birth date',null=True,blank=True)
-    gender = models.CharField(verbose_name='gender',max_length=1, choices=GENDER_CHOICES, help_text='Select your gender')
+    gender = models.CharField(verbose_name='gender',max_length=20, choices=GENDER_CHOICES, help_text='Select your gender')
      
     """_Role based authorization purposes_
     """
@@ -122,131 +121,29 @@ class CustomUser(AbstractUser):
 
 # Patient Class
 class Patient(models.Model):
-    
-    PATIENT_TYPE_CHOICES = (
-        ('urgency', 'Urgency'),
-        ('common', 'Common'),
-    )
-    
+        
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
-    patient_type = models.CharField(max_length=50, choices=PATIENT_TYPE_CHOICES)
-# Temperature in degrees Celsius
-    temperature = models.DecimalField(
-                                    max_digits=5,
-                                    decimal_places=2,
-                                    validators=[MinValueValidator(36.5),MaxValueValidator(42.5)],
-                                    verbose_name='Body temperature',
-                                    help_text="Patient's body temperature in degrees Celsius",
-                                    null=True,   # Allows the field to be null if temperature is unknown
-                                    blank=True)  # Allows the field to be blank in forms 
-
-# Pulse in beats per minute    
-    pulse = models.IntegerField(
-        validators=[MinValueValidator(40),MaxValueValidator(120)],
-        verbose_name='Pulse Rate',
-        help_text="Patient's pulse rate in beats per minute",
-        null=True,  # Allows the field to be null if pulse is unknown
-        blank=True) # Allows the field to be blank in forms 
-    
- # Blood pressure in mmHg, typically recorded as systolic(HIGH)/diastolic(LOW)
-    systolic_pressure = models.DecimalField(
-        verbose_name="Systolic Blood Pressure",
-        help_text="Patient's systolic blood pressure in mmHg",
-        max_digits=5,
-        decimal_places=2,
-        validators=[MinValueValidator(90),MaxValueValidator(140)],
-        null=True,  # Allows the field to be null if blood pressure is unknown
-        blank=True,  # Allows the field to be blank in forms
-    )
-    diastolic_pressure = models.DecimalField(
-        verbose_name="Diastolic Blood Pressure",
-        help_text="Patient's diastolic blood pressure in mmHg",
-        max_digits=5,
-        decimal_places=2,
-        validators=[MinValueValidator(60),MaxValueValidator(90)],
-        null=True,  # Allows the field to be null if blood pressure is unknown
-        blank=True,  # Allows the field to be blank in forms
-    )
-       
-    
-    """_Returns a summary of the patient's vital signs. This promotes encapsulation by providing a 
-        clear interface to access the vital signs_
-    """
-    def get_vital_signs(self):
-        # Returns a summary of the patient's vital signs
-        return f"Temperature: {self.temperature}, Pulse: {self.pulse}, Blood Pressure: {self.systolic_pressure}/{self.diastolic_pressure}"
+    address = models.CharField(max_length=125,help_text='Your address info')
+    medical_history = models.TextField()
     
     # Used by Django Admin when registered the Patient model
     # Used by Django forms when accessing objets of this type
     def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name} ({self.patient_type.capitalize()})"
+        return f"{self.user.first_name} {self.user.last_name}"
     
+    """
     # Checking patient's profile completitud
     def is_profile_complete(self):
         return bool(self.temperature and self.pulse and self.systolic_pressure and self.diastolic_pressure)  
-    
-    # Is patient reported as urgency?
-    def is_urgency(self):
-        return self.patient_type == 'urgency'
+    """
     
     class Meta:
         verbose_name = "Patient"
         verbose_name_plural = "Patients"
-    
+        
     def save(self, *args, **kwargs):
-        print(f"Saving Patient: {self.user.first_name}, Temperature:{self.temperature}, Pulse: {self.pulse}, Blood Pressure: {self.systolic_pressure}/{self.diastolic_pressure}")
+        print(f"Saving Patient: {self.user.first_name}")
         super(Patient, self).save(*args, **kwargs)
-        
-# CommonPatient Class(inherits from Patient)    
-class CommonPatient(Patient):
-
-    NO=0
-    YES=1
-    
-    ANALYSIS_CHOICES=(
-        (NO,'No'),
-        (YES,'Yes')
-    )    
-    
-    diagnosis=models.CharField(max_length=255,verbose_name='diagnosis',help_text="Patient's medical diagnosis",null=True,blank=True)
-    analysis_applied=models.IntegerField(verbose_name='Analysis applied', choices=ANALYSIS_CHOICES, help_text="Patient's required analysis?")
-    
-    class Meta:
-        proxy:True
-        
-# UrgencyPatient Class (inherits from Patient)                
-class UrgencyPatient(Patient):
-    
-    NO=0
-    YES=1
-    
-    ADMISSION_CHOICES=(
-        (NO,'No'),
-        (YES,'Yes')
-    ) 
-    
-    main_symptom = models.CharField(max_length=255,verbose_name='Main synptom',help_text="Patient's main symptom")
-    admitted =models.IntegerField(verbose_name='Admitted', choices=ADMISSION_CHOICES, help_text="Patient's required admission?")
-
-    class Meta:
-        proxy:True
-    
-    """_constructor of the UrgencyPatient class initializes the vital sign fields inherited from the Patient class
-        and adds the main_symptom and admitted fields specific to urgency patients_
-    """
-    def __init__(self,temperature,pulse,systolic_pressure,diastolic_pressure,main_symptom,admitted):
-        super.__init__(temperature,pulse,systolic_pressure,diastolic_pressure) # Calls the constructor of the parent Patient class to initialize the inherited fields
-        self.main_symptom = main_symptom
-        self.admitted = admitted
-
-    """_Registers the urgency patient with their vital signs, main symptoms, and admission status_.
-       _Demonstrates the principle of inheritance and code reuse_
-    """
-    def register(self):
-        # Registers the urgency patient with their vital signs, main symptom, and admission status
-        vital_signs = self.get_vital_signs()
-        admission_status = "Admitted" if self.admitted else "Not Admitted" # Determines the admission status based on the admitted field using a ternary operator
-        return f"Urgency Patient - Main Symptom: {self.main_symptom}, Vital Signs: {vital_signs}, Admission Status: {admission_status}"
         
 # Doctor Class        
 class Doctor(models.Model):
@@ -287,3 +184,4 @@ class Doctor(models.Model):
     def save(self, *args, **kwargs):
         print(f"Saving Doctor: {self.user.first_name}, Specialty:{self.specialty},  Experience: {self.experience}")
         super(Doctor, self).save(*args, **kwargs)
+      
