@@ -18,7 +18,7 @@ class home_page(TemplateView):
 
 class CreateConsultationView(LoginRequiredMixin,TemplateView):
     template_name = 'homepage/consultations.html'  # Consultations current template
-    
+    """
     def get(self, request, *args, **kwargs):
         # Initialize forms
         consultation_form = ConsultationForm()
@@ -35,6 +35,7 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
             'vital_signs_form': vital_signs_form,
         }
         return self.render_to_response(context)
+    """
     
     """_Context data needed when loading the form (GET) Method_"""
     def get_context_data(self, **kwargs):
@@ -45,11 +46,33 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
             try:
                 # Get the current doctor from the request (assuming you have access to it)
                 doctor = Doctor.objects.get(user=self.request.user) # This assumes the doctor is the logged-in user
+                # Providing the patient in consultation with this doctor
+        
                 # Providing the list of consultations as 'object_list'
                 context['object_list'] = Consultation.objects.filter(doctor=doctor)
+                
+                #print(f'{context['object_list']}')
+                        
+                # Optionally, get the most recent consultation (or a specific consultation) for the current doctor
+                # You can customize this logic based on your needs
+                most_recent_consultation = Consultation.objects.filter(doctor=doctor).order_by('-consultation_date').first()
+                
+                if most_recent_consultation:
+                    # Get the corresponding PatientConsultation for the most recent consultation
+                    patient_consultation = PatientConsultation.objects.filter(consultation = most_recent_consultation).first()
+                    
+                    if patient_consultation:                  
+                        context['patient'] = patient_consultation.patient
+                    else:
+                        context['patient'] = None
+                else:
+                    context['patient'] = None
+            
             except Doctor.DoesNotExist:
-                 doctor = None
-                 
+                    doctor = None
+                    context['object_list'] = []
+                    context['patient'] = None
+                    
         elif user.user_type == 'patient':
             try:
                 # Get the current doctor from the request (assuming you have access to it)
@@ -108,6 +131,7 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
             
             # If no duplicate is found, the code proceeds to save the consultation with the doctor as before
             consultation.doctor = doctor
+            consultation.status = 'in-progress'
             consultation.save()
             
             # Save the patient consultation
