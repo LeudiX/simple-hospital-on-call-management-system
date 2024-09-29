@@ -47,7 +47,7 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
                 # Get the current doctor from the request (assuming you have access to it)
                 doctor = Doctor.objects.get(user=self.request.user) # This assumes the doctor is the logged-in user
         
-                # Providing the list of consultations as 'consultations'
+                # Providing the list of doctor's consultations as 'consultations'
                 context['consultations'] = Consultation.objects.filter(doctor=doctor)
                 
                 #print(f'{context['object_list']}')
@@ -178,4 +178,5 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
         context = self.get_context_data()
         context['form'] = consultation_form
         context['patient_consultation_form'] = patient_consultation_form
+        
         return self.render_to_response(context)

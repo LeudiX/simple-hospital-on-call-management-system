@@ -24,7 +24,6 @@ class ConsultationForm(forms.ModelForm):
                 Field('notes')
             )
         )
-        
         # Plan A for notes validation
         #self.fields['notes'] = forms.CharField( widget=forms.Textarea, required=True, error_messages={'required': 'Please provide your notes.'}) # Custom error message
 
@@ -102,3 +101,9 @@ class VitalSignsForm(forms.ModelForm):
                 Field('systolic_pressure')
             )
         )
+
+"""
+Using Django's formsets to dynamically add or remove forms based on the selection
+"""
+CommonConsultationFormset = forms.formset_factory(CommonConsultationForm, extra=1)
+UrgencyConsultationFormset = forms.formset_factory(UrgencyConsultationForm, extra=1)

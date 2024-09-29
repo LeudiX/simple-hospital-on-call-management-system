@@ -67,7 +67,7 @@ class CommonConsultation(models.Model):
 class PatientConsultation(models.Model):
     CONSULTATION_TYPE_CHOICES = (
         ('urgency', 'Urgency'),
-        ('regular', 'Regular'),
+        ('common', 'Common'),
     )
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     consultation = models.ForeignKey(Consultation, on_delete=models.CASCADE)

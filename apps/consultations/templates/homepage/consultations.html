@@ -16,11 +16,12 @@
                     {{ patient_consultation_form|crispy }}<!-- Patient Consultation Form -->
                     {{form|crispy}} <!-- Main Consultation Form -->
                     <!-- Additional forms based on consultation type -->
-                    {% if consultation_type == 'urgency' %}
-                      {{ urgency_consultation_form|crispy}}<!-- Urgency Consultation Form -->
-                    {% elif consultation_type == 'common' %}
-                      {{ common_consultation_form|crispy}}<!-- Common Consultation Form -->
-                    {% endif %}
+                    <div id="common-consultation-form" style="display: none;">
+                        {{ common_consultation_form|crispy }}<!-- Common Consultation Form -->
+                    </div>
+                    <div id="urgency-consultation-form" style="display: none;">
+                        {{ urgency_consultation_form|crispy }}<!-- Urgency Consultation Form -->
+                    </div>
                     {{ vital_signs_form|crispy }} <!-- Vital Signs Form -->
                     <button type="submit" class="btn btn-success">Create Consultation</button>
                 </form>
@@ -74,5 +75,20 @@
 {% block script %}
 <script>
     document.getElementById('consultations').classList.add('active');
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const consultationTypeField = document.getElementById('id_consultation_type');
+        consultationTypeField.addEventListener('change', function() {
+            const selectedValue = consultationTypeField.value;
+            if (selectedValue === 'common') {
+                document.getElementById('common-consultation-form').style.display = 'block';
+                document.getElementById('urgency-consultation-form').style.display = 'none';
+            } else if (selectedValue === 'urgency') {
+                document.getElementById('common-consultation-form').style.display = 'none';
+                document.getElementById('urgency-consultation-form').style.display = 'block';
+            }
+        });
+    });
 </script>
 {% endblock %}
