@@ -52,6 +52,5 @@ project, i recommend delete all the migrations files, pycache or just the db.
 -Type *python manage.py createsuperuser*
 
 TODO:
--Fix doctor issues when registered and access to consultations directly
--Validations over patient field autoremove when consultations registered not working
--Add new querysets according to business model
+-Add querysets according to business model
+-Add last vital signs summary to personal patient profile

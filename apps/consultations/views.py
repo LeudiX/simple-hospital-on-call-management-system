@@ -76,22 +76,25 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
             try:
                 # Get the current doctor from the request (assuming you have access to it)
                 patient = Patient.objects.get(user=user)
-                               
-                # Providing the list of consultations as 'patient_consultation'
-                context['patient_consultation'] = PatientConsultation.objects.filter(patient=patient)
                 
-                # Get the corresponding PatientConsultation for the Patient most recent consultation
-                most_recent_consultation = PatientConsultation.objects.filter(patient=patient).first()
+                # Query all consultations for the patient ordered by consultation_date
+                all_consultations = PatientConsultation.objects.filter(patient=patient)
+                
+                # Providing the list of consultations as 'patient_consultation' to the context
+                context['patient_consultations'] = all_consultations
+                
+                # Get the Patient's most recent consultation
+                most_recent_consultation = all_consultations.last()
             
                 if most_recent_consultation:
-                    #print(f'{most_recent_consultation.consultation.doctor.user.get_full_name()}') [Debugging purposes only]
-                    context['consultations']= most_recent_consultation.consultation
+                    #print(f'{most_recent_consultation.consultation}') #[Debugging purposes only]
+                    context['most_recent_consultation']= most_recent_consultation.consultation
                 else:
-                    context['consultations']= None
+                    context['most_recent_consultation']= None
             except Patient.DoesNotExist:
                 patient = None
-                context['patient_consultation'] = []
-                context['consultations'] = None
+                context['patient_consultations'] = []
+                context['most_recent_consultation'] = None
           
         # Initialize the form with the current doctor
         context['form'] = ConsultationForm()

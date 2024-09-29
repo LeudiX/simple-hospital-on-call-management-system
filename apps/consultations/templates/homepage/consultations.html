@@ -2,74 +2,88 @@
 {% load crispy_forms_tags %}
 
 {% block navbar %}
-    {% include 'homepage/magic-nav.html' %}
- {% endblock %}
+{% include 'homepage/magic-nav.html' %}
+{% endblock %}
 
 
 {% block content %}
-    <div class="row g-3 text-white">
-        <h1>Consultations</h1>
-        {% if user.is_doctor %}
-            <div class="col-sm-6">
-                <form method="post">
-                    {% csrf_token %}
-                    {{ patient_consultation_form|crispy }}<!-- Patient Consultation Form -->
-                    {{form|crispy}} <!-- Main Consultation Form -->
-                    <!-- Additional forms based on consultation type -->
-                    <div id="common-consultation-form" style="display: none;">
-                        {{ common_consultation_form|crispy }}<!-- Common Consultation Form -->
-                    </div>
-                    <div id="urgency-consultation-form" style="display: none;">
-                        {{ urgency_consultation_form|crispy }}<!-- Urgency Consultation Form -->
-                    </div>
-                    {{ vital_signs_form|crispy }} <!-- Vital Signs Form -->
-                    <button type="submit" class="btn btn-success">Create Consultation</button>
-                </form>
+<div class="row g-3 text-white">
+    <h1>Consultations</h1>
+    {% if user.is_doctor %}
+    <div class="col-sm-6">
+        <form method="post">
+            {% csrf_token %}
+            {{ patient_consultation_form|crispy }}<!-- Patient Consultation Form -->
+            {{form|crispy}} <!-- Main Consultation Form -->
+            <!-- Additional forms based on consultation type -->
+            <div id="common-consultation-form" style="display: none;">
+                {{ common_consultation_form|crispy }}<!-- Common Consultation Form -->
             </div>
-            <div class="col-sm px-5">
-            {% if consultations %}  
-                <h4>Patient Consultation's Historial</h4>
-                <ul>
-                    <!--consultations reference is defined in views as a context variable for access doctor's consultations-->
-                    {% for consultation in consultations %}
-                    <li class='py-2'>
-                        <!--patient reference is defined in views as a context variable for access patient's current info-->
-                        {% if patient %}
-                            <b>Patient:</b> {{ patient.user.get_full_name }}<br>
-                            {% else %}
-                            <p>No patient currently in consultation.</p>
-                        {% endif %}
-                        <b>Date:</b> {{ consultation.consultation_date }}<br>
-                        <b>Notes:</b> {{ consultation.notes }}<br>
-                        <b>Status:</b> {{ consultation.status.capitalize }}<br>
-                    </li>
-                    {% endfor %}
-                </ul> 
-            {% else %}
-                <p>No consultations available.</p>
-            {% endif %}  
+            <div id="urgency-consultation-form" style="display: none;">
+                {{ urgency_consultation_form|crispy }}<!-- Urgency Consultation Form -->
             </div>
-        {% elif user.is_patient %}
-            <div class="col-sm-6">
-                <h4>Patient Consultation's Historial</h4>
-                <ul>
-                    <!--patient_consultation reference is defined in views as a context variable-->
-                    {% for patientconsultation in patient_consultation %}
-                    <li class='py-2'>
-                        <b>Patient:</b> {{ patientconsultation.patient.user.get_full_name }}<br>
-                        {% if consultations %}
-                            <b>Consultated by:</b> {{ consultations.doctor.user.get_full_name }}<br>
-                            <b>Date:</b> {{ consultations.consultation_date }}<br>
-                            <b>Notes:</b> {{ consultations.notes }}<br>
-                        {% else %}
-                        <p>No consultations in your historial available.</p>
-                        {% endif %}
-                    </li>
-                    {% endfor %}
-                </ul>   
-            </div>
+            {{ vital_signs_form|crispy }} <!-- Vital Signs Form -->
+            <button type="submit" class="btn btn-success">Create Consultation</button>
+        </form>
+    </div>
+    <div class="col-sm px-5">
+        {% if consultations %}
+        <h4>Patient Consultation's Historial</h4>
+        <ul>
+            <!--consultations reference is defined in views as a context variable for access doctor's consultations-->
+            {% for consultation in consultations %}
+            <li class='py-2'>
+                <!--patient reference is defined in views as a context variable for access patient's current info-->
+                {% if patient %}
+                <b>Patient:</b> {{ patient.user.get_full_name }}<br>
+                {% else %}
+                <p>No patient currently in consultation.</p>
+                {% endif %}
+                <b>Date:</b> {{ consultation.consultation_date }}<br>
+                <b>Notes:</b> {{ consultation.notes }}<br>
+                <b>Status:</b> {{ consultation.status.capitalize }}<br>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No consultations available.</p>
         {% endif %}
     </div>
+    {% elif user.is_patient %}
+    <div class="col-sm-6">
+        <h4>Patient Consultation's Historial</h4>
+        <ul>
+            <!--patient_consultations reference is defined in views as a context variable-->
+            {% for ptconsultation in patient_consultations %}
+            <li class='py-2'>
+                <b>Patient:</b> {{ ptconsultation.patient.user.get_full_name }}<br>
+                {% if ptconsultation %}
+                <b>Consultated by:</b> {{ ptconsultation.consultation.doctor.user.get_full_name }}<br>
+                <b>Date:</b> {{ ptconsultation.consultation.consultation_date }}<br>
+                <b>Notes:</b> {{ ptconsultation.consultation.notes }}<br>
+                {% else %}
+                <p>No consultations in your historial available.</p>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-sm-6">
+        <h4>Most Recent Consultation:</h4>
+        {% if most_recent_consultation %}
+        <ul>
+            <li class='py-2'>
+                <b>Consultated by:</b> {{ most_recent_consultation.doctor.user.get_full_name }}<br>
+                <b>Date:</b> {{ most_recent_consultation.consultation_date }}<br>
+                <b>Notes:</b> {{ most_recent_consultation.notes }}<br>
+            </li>
+        </ul>
+        {% else %}
+        <p>No recent consultations found.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
 {% endblock %}
 
 {% block script %}
@@ -77,9 +91,9 @@
     document.getElementById('consultations').classList.add('active');
 </script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const consultationTypeField = document.getElementById('id_consultation_type');
-        consultationTypeField.addEventListener('change', function() {
+        consultationTypeField.addEventListener('change', function () {
             const selectedValue = consultationTypeField.value;
             if (selectedValue === 'common') {
                 document.getElementById('common-consultation-form').style.display = 'block';
