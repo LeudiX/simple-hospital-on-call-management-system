@@ -27,7 +27,14 @@ class Consultation(models.Model):
     def __str__(self):
         return f"Doctor: {self.doctor.user.first_name} in consultation on {self.consultation_date.strftime('%Y-%m-%d')}"
     
-    #{self.patient.user.first_name}
+    # Displaying the patient's name directly in the consultation list without the extra loop
+    def get_patient_names(self):
+        return ', '.join([pc.patient.user.get_full_name() for pc in self.patientconsultation_set.all()])
+    
+    # Displaying the consultation_type name directly in the consultation list without the extra loop
+    def get_consultation_type(self):
+        return ', '.join([pc.consultation_type for pc in self.patientconsultation_set.all()])
+    
     
     class Meta:
         verbose_name = "Consultation"
