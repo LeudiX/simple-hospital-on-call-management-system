@@ -131,12 +131,6 @@ class Patient(models.Model):
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
     
-    """
-    # Checking patient's profile completitud
-    def is_profile_complete(self):
-        return bool(self.temperature and self.pulse and self.systolic_pressure and self.diastolic_pressure)  
-    """
-    
     class Meta:
         verbose_name = "Patient"
         verbose_name_plural = "Patients"

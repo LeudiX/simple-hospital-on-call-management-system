@@ -77,7 +77,7 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
                 # Get the current patient from the request (assuming you have access to it)
                 patient = Patient.objects.get(user=user)
                 
-                # Query all consultations for the patient ordered by consultation_date
+                # Query all consultations for the patient
                 all_consultations = PatientConsultation.objects.filter(patient=patient)
                 
                 # Providing the list of consultations as 'patient_consultation' to the context

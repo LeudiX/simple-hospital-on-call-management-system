@@ -3,6 +3,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+
+from apps.consultations.models import PatientConsultation, VitalSigns
 from .forms import RegistrationForm,ProfileForm
 from .models import Doctor, Patient
 from django.shortcuts import get_object_or_404
@@ -43,26 +45,6 @@ def register(request):
         form = RegistrationForm() # Form load for GET method
     return render(request,'users/register.html',{'form':form})
 
-"""_Showing the current user's profile [No pk required]_"""
-@login_required # Decorator to protect views that require authentication
-def profile(request):
-    User = get_user_model() # Retrieving the user model, ensuring compatibility with custom user models
-    custom_user = User.objects.get(pk=request.user.pk) # Fetching fresh data
-    if request.method =='POST':
-        form = ProfileForm(request.POST,instance=request.user) # Access linked user profile
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Your profile has been updated!')
-            return redirect('profile')
-    else:
-        form = ProfileForm(instance=request.user) # Pre-fill with current data for GET method
-        age = custom_user.get_age()
-    context = {
-        'form':form,
-        'age':age,
-        'birthdate':custom_user.birthdate
-        }
-    return render(request,'users/profile.html',context)
 
 @login_required
 def profile_view(request):
@@ -73,6 +55,7 @@ def profile_view(request):
     User = get_user_model() # Retrieving the user model, ensuring compatibility with custom user models
     age = User.objects.get(pk=request.user.pk).get_age() # Fetching AGE from CustomUser model 
     
+    # Get the current doctor from the request (assuming you have access to it)
     if user.user_type == 'doctor':
         try:
             doctor_profile = Doctor.objects.get(user=user)
@@ -82,26 +65,23 @@ def profile_view(request):
             doctor_profile = None
     elif user.user_type == 'patient':
         try:
+            # Get the current patient from the request (assuming you have access to it)
             patient_profile = Patient.objects.get(user=user)
-            initial_data['address']=patient_profile.address
-            initial_data['medical_history'] = patient_profile.medical_history
-        except Doctor.DoesNotExist:
-            patient_profile = None
-            """
-            try:
-                common_patient  = CommonPatient.objects.get(user=user)
-                initial_data['diagnosis']= common_patient.diagnosis
-                initial_data['analysis_applied']= common_patient.analysis_applied
-            except CommonPatient.DoesNotExist:
-                common_patient = None;
             
-            try:
-                urgency_patient = UrgencyPatient.objects.get(user=user)
-                initial_data['main_symptom'] = urgency_patient.main_symptom
-                initial_data['admitted'] = urgency_patient.admitted
-            except  UrgencyPatient.DoesNotExist:
-                urgency_patient = None;    
-            """    
+            # Query all consultations for the patient ordered by consultation_date
+            last_consultation = PatientConsultation.objects.filter(patient=patient_profile).order_by('-consultation__consultation_date').first()
+            
+            # Get the last VitalSign entry related to the last consultation
+            last_vital_signs = None
+            if last_consultation:
+                last_vital_signs = VitalSigns.objects.filter(consultation= last_consultation.consultation).first()
+            
+            #Preparing the context for show vital signs
+            #context['last_consultation'] = last_consultation
+            #context['last_vital_signs'] = last_vital_signs
+            
+            initial_data['address']=patient_profile.address
+            initial_data['medical_history'] = patient_profile.medical_history    
         except Patient.DoesNotExist:
             patient_profile = None
     
@@ -125,22 +105,6 @@ def profile_view(request):
                 patient_profile.medical_history = form.cleaned_data['medical_history']
                 patient_profile.save()
                 messages.success(request,f'Patient {patient_profile.user.get_full_name()} profile successfully added to registry!')
-                """
-                print(f'Patient profile: {patient_profile.patient_type}')
-                if patient_profile.patient_type =='common':
-                    common_patient,created = CommonPatient.objects.get_or_create(user=user)
-                    common_patient.diagnosis = form.cleaned_data['diagnosis']
-                    common_patient.analysis_applied = form.cleaned_data['analysis_applied']
-                    common_patient.save()
-                    messages.success(request,f'Patient {common_patient.user.get_full_name()} with {common_patient.patient_type} profile successfully added to registry!')
-                
-                elif patient_profile.patient_type == 'urgency':
-                    urgency_patient, created = UrgencyPatient.objects.get_or_create(user=user)
-                    urgency_patient.main_symptom = form.cleaned_data['main_symptom']
-                    urgency_patient.admitted = form.cleaned_data['admitted']
-                    urgency_patient.save()
-                    messages.success(request,f'Patient {urgency_patient.user.get_full_name()}  with {urgency_patient.patient_type} profile successfully added to registry!')
-                """
             return redirect('profile') 
     else:
         form = ProfileForm(instance=user, user=user,initial=initial_data)
@@ -150,7 +114,9 @@ def profile_view(request):
         'age':age,
         'doctor':doctor_profile if user.user_type == 'doctor' else None, #Accessing current doctor info if present in session
         'patient': patient_profile if user.user_type == 'patient' else None, #Accessing current patient info if present in session
-        }
+        'last_consultation': last_consultation if user.user_type == 'patient' else None,
+        'last_vital_signs': last_vital_signs if user.user_type == 'patient' else None,
+        }   
     
     return render(request, 'users/profile.html',context)
  

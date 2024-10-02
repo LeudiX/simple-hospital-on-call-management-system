@@ -35,7 +35,6 @@ class Consultation(models.Model):
     def get_consultation_type(self):
         return ', '.join([pc.consultation_type for pc in self.patientconsultation_set.all()])
     
-    
     class Meta:
         verbose_name = "Consultation"
         verbose_name_plural = "Consultations"
@@ -126,12 +125,3 @@ class VitalSigns(models.Model):
     def get_vital_signs(self):
         # Returns a summary of the patient's vital signs
         return f"Temperature: {self.temperature}, Pulse: {self.pulse}, Blood Pressure: {self.systolic_pressure}/{self.diastolic_pressure}"
-
-    """_Registers the urgency patient with their vital signs, main symptoms, and admission status_.
-    _Demonstrates the principle of inheritance and code reuse_
-    def register(self):
-        # Registers the urgency patient with their vital signs, main symptom, and admission status
-        vital_signs = self.get_vital_signs()
-        admission_status = "Admitted" if UrgencyConsultation.admitted else "Not Admitted" # Determines the admission status based on the admitted field using a ternary operator
-        return f"Urgency Patient - Main Symptom: {UrgencyConsultation.main_symptom}, Vital Signs: {vital_signs}, Admission Status: {admission_status}"
-    """
