@@ -47,8 +47,8 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
                 # Get the current doctor from the request (assuming you have access to it)
                 doctor = Doctor.objects.get(user=user) # This assumes the doctor is the logged-in user
         
-                # Providing the list of doctor's consultations as 'consultations' with patient information
-                doctor_consultations = Consultation.objects.filter(doctor=doctor).select_related()
+                # Providing the list of doctor's consultations as 'consultations' with patient information ordered by consultation_date
+                doctor_consultations = Consultation.objects.filter(doctor=doctor).select_related().order_by('-consultation_date')
                 context['consultations'] = doctor_consultations
                       
                 # Optionally, get the most recent consultation (or a specific consultation) for the current doctor
@@ -59,8 +59,7 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
                     # Get the corresponding PatientConsultation for the Doctor most recent consultation
                     patient_consultation = PatientConsultation.objects.filter(consultation = most_recent_consultation).last()
                     
-                    if patient_consultation: 
-                        print(f'{patient_consultation}')                 
+                    if patient_consultation:                
                         context['patient'] = patient_consultation.patient
                     else:
                         context['patient'] = None

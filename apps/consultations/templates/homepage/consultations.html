@@ -27,62 +27,129 @@
         </form>
     </div>
     <div class="col-sm px-5">
-        {% if consultations %}
-        <h4>Patient's Consultation Historial</h4>
-        <ul>
-            <!--consultations reference is defined in views as a context variable for access doctor's consultations-->
-            {% for consultation in consultations %}
-            <li class='py-2'>
-                <!--patient reference is defined in views as a context variable for access patient's current info-->
-                {% if patient %}
-                <!-- Displaying the patient's name directly in the consultation list without the extra loop-->
-                <b>Patient:</b> {{ consultation.get_patient_names }}<br>
-                <b>Consultation type:</b> {{ consultation.get_consultation_type.capitalize }}<br>
-                {% else %}
-                <p>No patient currently in consultation.</p>
-                {% endif %}
-                <b>Date:</b> {{ consultation.consultation_date }}<br>
-                <b>Notes:</b> {{ consultation.notes }}<br>
-                <b>Status:</b> {{ consultation.status.capitalize }}<br>
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p>No consultations available.</p>
-        {% endif %}
+        <style>
+            /*Custom style for accordion arrow button to get white icon from url*/
+            .accordion-button::after {
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+            }
+
+            /*Custom style to apply to the accordion button to obtain gold-colored border when in focus*/
+            .accordion-button:focus {
+                border-color: #e2be50 !important;
+                box-shadow: 0 0 0 .25rem #e2be50;
+            }
+        </style>
+        <div class="accordion" id="accordionDoctorConsultations">
+            <div class="accordion-item">
+                <div class="accordion-header" id="headingFirst">
+                    <button class="accordion-button bg-success text-white" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseFirst" aria-expanded="false" aria-controls="collapseFirst">
+                        <h4>Patient's Consultation Historial</h4>
+                    </button>
+                </div>
+                <div id="collapseFirst" class="accordion-collapse collapse show" aria-labelledby="headingFirst"
+                    data-bs-parent="#accordionDoctorConsultations">
+                    <div class="accordion-body bg-dark">
+                        {% if consultations %}
+                        <ul>
+                            <!--consultations reference is defined in views as a context variable for access doctor's consultations-->
+                            {% for consultation in consultations %}
+                            <li class='py-2'>
+                                <!--patient reference is defined in views as a context variable for access patient's current info-->
+                                {% if patient %}
+                                <!-- Displaying the patient's name directly in the consultation list without the extra loop-->
+                                <b>Patient:</b> {{ consultation.get_patient_names }}<br>
+                                <b>Consultation type:</b> {{ consultation.get_consultation_type.capitalize }}<br>
+                                {% else %}
+                                <p>No patient currently in consultation.</p>
+                                {% endif %}
+                                <b>Date:</b> {{ consultation.consultation_date }}<br>
+                                <b>Notes:</b> {{ consultation.notes }}<br>
+                                <b>Status:</b> {{ consultation.status.capitalize }}<br>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>No consultations available in your historial.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     {% elif user.is_patient %}
-    <div class="col-sm-6">
-        <h4>Patient Consultation's Historial</h4>
-        {% if patient_consultations %}
-        <ul>
-            <!--patient_consultations reference is defined in views as a context variable-->
-            {% for ptconsultation in patient_consultations %}
-            <li class='py-2'>
-                <b>Patient:</b> {{ ptconsultation.patient.user.get_full_name }}<br>
-                <b>Consultated by:</b> {{ ptconsultation.consultation.doctor.user.get_full_name }}<br>
-                <b>Date:</b> {{ ptconsultation.consultation.consultation_date }}<br>
-                <b>Notes:</b> {{ ptconsultation.consultation.notes }}<br>
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p>No consultations in your historial available.</p>
-        {% endif %}
+    <div class="col-sm-5">
+        <style>
+            /*Custom style for accordion arrow button to get white icon from url*/
+            .accordion-button::after {
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+            }
+
+            /*Custom style to apply to the accordion button to obtain gold-colored border when in focus*/
+            .accordion-button:focus {
+                border-color: #e2be50 !important;
+                box-shadow: 0 0 0 .25rem #e2be50;
+            }
+        </style>
+        <div class="accordion" id="accordionConsultation">
+            <div class="accordion-item">
+                <div class="accordion-header" id="headingFirst">
+                    <button class="accordion-button bg-success text-white" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseFirst" aria-expanded="false" aria-controls="collapseFirst">
+                        <h4>Patient Consultation's Historial</h4>
+                    </button>
+                </div>
+                <div id="collapseFirst" class="accordion-collapse collapse show" aria-labelledby="headingFirst"
+                    data-bs-parent="#accordionConsultation">
+                    <div class="accordion-body bg-dark">
+                        {% if patient_consultations %}
+                        <ul>
+                            <!--patient_consultations reference is defined in views as a context variable-->
+                            {% for ptconsultation in patient_consultations %}
+                            <li class='py-2'>
+                                <b>Patient:</b> {{ ptconsultation.patient.user.get_full_name }}<br>
+                                <b>Consultated by:</b> {{ ptconsultation.consultation.doctor.user.get_full_name }}<br>
+                                <b>Date:</b> {{ ptconsultation.consultation.consultation_date }}<br>
+                                <b>Notes:</b> {{ ptconsultation.consultation.notes }}<br>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>No consultations in your historial available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-sm-6">
-        <h4>Most Recent Consultation:</h4>
-        {% if most_recent_consultation %}
-        <ul>
-            <li class='py-2'>
-                <b>Consultated by:</b> {{ most_recent_consultation.doctor.user.get_full_name }}<br>
-                <b>Date:</b> {{ most_recent_consultation.consultation_date }}<br>
-                <b>Notes:</b> {{ most_recent_consultation.notes }}<br>
-            </li>
-        </ul>
-        {% else %}
-        <p>No recent consultations found.</p>
-        {% endif %}
+    <div class="col-sm"></div>
+    <div class="col-sm-5">
+        <div class="accordion" id="accordionLastConsultation">
+            <div class="accordion-item">
+                <div class="accordion-header" id="headingTwo">
+                    <button class="accordion-button bg-success text-white" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        <h4>Most Recent Consultation:</h4>
+                    </button>
+                </div>
+                <div id="collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo"
+                    data-bs-parent="#accordionLastConsultation">
+                    <div class="accordion-body bg-dark">
+                        {% if most_recent_consultation %}
+                        <ul>
+                            <li class='py-2'>
+                                <b>Consultated by:</b> {{ most_recent_consultation.doctor.user.get_full_name }}<br>
+                                <b>Date:</b> {{ most_recent_consultation.consultation_date }}<br>
+                                <b>Notes:</b> {{ most_recent_consultation.notes }}<br>
+                            </li>
+                        </ul>
+                        {% else %}
+                        <p>No recent consultations found.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     {% endif %}
 </div>
@@ -99,11 +166,11 @@
         const consultationTypeField = document.getElementById('id_consultation_type');
         const commonForm = document.getElementById('common-consultation-form');
         const urgencyForm = document.getElementById('urgency-consultation-form');
-    
+
         function toggleFields(showForm, hideForm) {
             showForm.style.display = 'block';
             hideForm.style.display = 'none';
-    
+
             // Enable and set required for visible fields
             showForm.querySelectorAll('input, select, textarea').forEach(field => {
                 field.disabled = false;
@@ -111,14 +178,14 @@
                     field.required = true;
                 }
             });
-    
+
             // Disable and remove required from hidden fields
             hideForm.querySelectorAll('input, select, textarea').forEach(field => {
                 field.disabled = true;
                 field.required = false;
             });
         }
-    
+
         consultationTypeField.addEventListener('change', function () {
             const selectedValue = consultationTypeField.value;
             if (selectedValue === 'common') {
@@ -127,9 +194,9 @@
                 toggleFields(urgencyForm, commonForm);
             }
         });
-    
+
         // Initial setup
         consultationTypeField.dispatchEvent(new Event('change'));
     });
-    </script>
+</script>
 {% endblock %}
