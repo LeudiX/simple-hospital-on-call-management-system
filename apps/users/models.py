@@ -117,8 +117,6 @@ class CustomUser(AbstractUser):
     
     objects=CustomUserManager()
 
-"""_Using Multi-table Inheritance and Proxy Models for handle the complex User Data Model and enhance future mantainment and scalability_"""
-
 # Patient Class
 class Patient(models.Model):
         

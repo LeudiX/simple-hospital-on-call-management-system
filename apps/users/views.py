@@ -6,13 +6,13 @@ from django.urls import reverse
 
 from apps.consultations.models import PatientConsultation, VitalSigns
 from .forms import RegistrationForm,ProfileForm
-from .models import Doctor, Patient
+from .models import CustomUser,Doctor, Patient
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import update_session_auth_hash
 
 # CustomUser Views.
 
-"""_View for register a new user in system _"""
+"""_Custom view for register a new user in system _"""
 def register(request):
     if request.method == 'POST':
         # Create a form that handle a POST request
@@ -45,7 +45,7 @@ def register(request):
         form = RegistrationForm() # Form load for GET method
     return render(request,'users/register.html',{'form':form})
 
-
+"""Custom view for handle users profiles in system"""
 @login_required
 def profile_view(request):
     user = request.user
@@ -119,4 +119,20 @@ def profile_view(request):
         }   
     
     return render(request, 'users/profile.html',context)
+
+"""Custom view for handle users administration in system """
+@login_required
+def users_list(request):
+    # Excluding superusers by filtering out users where is_superuser is True
+    users = CustomUser.objects.all().exclude(is_superuser=True) 
+    users_age=[]
+    
+    # Calculate and include age for all the users in system
+    for user in users:
+        age = user.get_age()
+        users_age.append({
+            'user':user,
+            'age':age
+        })
+    return render(request,'users/users_list.html',{'users':users_age})
  
