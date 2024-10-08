@@ -5,12 +5,11 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 from apps.consultations.models import PatientConsultation, VitalSigns
-from .forms import RegistrationForm,ProfileForm
+from .forms import RegistrationForm,ProfileForm,CustomUserChangeForm
 from .models import CustomUser,Doctor, Patient
 from django.shortcuts import get_object_or_404
-from django.contrib.auth import update_session_auth_hash
+from django.http import JsonResponse
 
-# CustomUser Views.
 
 """_Custom view for register a new user in system _"""
 def register(request):
@@ -75,11 +74,7 @@ def profile_view(request):
             last_vital_signs = None
             if last_consultation:
                 last_vital_signs = VitalSigns.objects.filter(consultation= last_consultation.consultation).first()
-            
-            #Preparing the context for show vital signs
-            #context['last_consultation'] = last_consultation
-            #context['last_vital_signs'] = last_vital_signs
-            
+               
             initial_data['address']=patient_profile.address
             initial_data['medical_history'] = patient_profile.medical_history    
         except Patient.DoesNotExist:
@@ -88,7 +83,6 @@ def profile_view(request):
     if request.method == 'POST':
         print(f'{request.POST}') # For debugging pourposes only
        
-        patient_type = request.POST.get('patient_type')  # Get patient_type from POST data
         form = ProfileForm(request.POST, instance=user, user=user,initial=initial_data)
         
         if form.is_valid():
@@ -122,7 +116,7 @@ def profile_view(request):
 
 """Custom view for handle users administration in system """
 @login_required
-def users_list(request):
+def list_users(request):
     # Excluding superusers by filtering out users where is_superuser is True
     users = CustomUser.objects.all().exclude(is_superuser=True) 
     users_age=[]
@@ -134,5 +128,26 @@ def users_list(request):
             'user':user,
             'age':age
         })
-    return render(request,'users/users_list.html',{'users':users_age})
- 
+    return render(request,'users/list_users.html',{'users':users_age})
+
+@login_required
+def edit_users(request,id):
+    user = get_object_or_404(CustomUser, id=id)
+    
+    if request.method == 'POST':       
+        form = CustomUserChangeForm(request.POST,instance=user)
+        if form.is_valid():
+           form.save()
+           messages.success(request,f'User {user.username} updated successfully')
+           return JsonResponse({'status':'success'})
+           #return redirect('users')
+        else:
+            return JsonResponse({'status':'error','errors':form.errors})   
+    else:
+        form = CustomUserChangeForm(instance=user)
+        
+    context = {
+        'form':form
+    }
+
+    return render(request,'users/user_form.html',context)

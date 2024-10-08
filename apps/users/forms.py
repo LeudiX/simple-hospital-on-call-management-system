@@ -4,6 +4,7 @@ from django.contrib.auth import password_validation
 from .models import CustomUser, Doctor, Patient
 from django.core.validators import MinValueValidator,MaxValueValidator
 
+"""User's registry form"""
 class RegistrationForm(UserCreationForm):
     
     email = forms.EmailField(required=True,widget=forms.EmailInput(attrs={'class':'form-control'}))
@@ -39,13 +40,14 @@ class RegistrationForm(UserCreationForm):
         model = CustomUser
         fields = ('username','first_name','last_name', 'email','user_type','birthdate','gender') # Fields to edit
 
-class CustomUserChangeForm(UserChangeForm):
+"""User's update form (ADMIN Tasks)"""
+class CustomUserChangeForm(forms.ModelForm):
 
     class Meta:
         model = CustomUser
-        fields = ("email",) #Field to edit in django admin
+        fields = ('username','email','user_type','is_active') 
 
-# Update Profile form
+"User's personal profile form"
 class ProfileForm(forms.ModelForm):
     
     gender = forms.ChoiceField(choices=[('','Choose your gender')]+list(CustomUser.GENDER_CHOICES),required=True)    
@@ -59,9 +61,7 @@ class ProfileForm(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
-        data = kwargs.get('data', None)  # Get form data from POST request
-        initial_patient_type = kwargs.get('initial', {}).get('patient_type')  # Get patient_type from initial data  
-        patient_type = data.get('patient_type') if data else initial_patient_type  # Use POST data if available, otherwise use initial data
+    
         super(ProfileForm, self).__init__(*args, **kwargs)
 
         if user and user.user_type == 'doctor':
@@ -72,46 +72,5 @@ class ProfileForm(forms.ModelForm):
         elif user and user.user_type == 'patient':
             self.fields['address'] = forms.CharField(max_length=125,help_text='Your address info')
             self.fields['medical_history'] = forms.CharField( widget=forms.Textarea, required=True, error_messages={'required': 'Please provide medical history.'}) # Custom error message
-    
-            """_summary_
-            
-            # Always add fields for both common and urgency patients
-            if patient_type =='common':
-                self.add_common_patient_fields()
-            elif patient_type =='urgency':
-                self.add_urgency_patient_fields()
-            
-            if 'diagnosis' in self.fields:
-                # Adding class to label via help_text (hack to target label via JavaScript)
-                #self.fields['diagnosis'].help_text = 'common-fields-label'
-                self.fields['diagnosis'].widget.attrs.update({'class': 'common-fields'})
-            if 'analysis_applied' in self.fields:
-                self.fields['analysis_applied'].widget.attrs.update({'class': 'common-fields'})
 
-            if 'main_symptom' in self.fields:
-                self.fields['main_symptom'].widget.attrs.update({'class': 'urgency-fields'})
-            if 'admitted' in self.fields:
-                self.fields['admitted'].widget.attrs.update({'class': 'urgency-fields'})
-                
-                
-             def add_common_patient_fields(self):
-        Add fields specific to CommonPatient.
-        self.fields['diagnosis'] = forms.CharField(max_length=255, required=True)
-        self.fields['analysis_applied'] = forms.ChoiceField(choices=[('','Was analysis applied?')]+ list(CommonPatient.ANALYSIS_CHOICES), required=True)
-        
-            def add_urgency_patient_fields(self):
-        Add fields specific to UrgencyPatient.
-        self.fields['main_symptom'] = forms.CharField(max_length=255, required=True)
-        self.fields['admitted'] = forms.ChoiceField(choices=[('','Was patient admitted to the center?')]+ list(UrgencyPatient.ADMISSION_CHOICES), required=True)
-        """
-            # Add CSS classes to dynamically hide/show fields
-            # Apply 'common-fields' class to both label and widget for common fields
-            
- 
-    """NOT WORKING RIGHT NOW"""
-    def clean_experience(self):
-        experience = self.cleaned_data['experience']
-        if experience is None:
-            raise forms.ValidationError("Experience is required.")
-        return experience
     

@@ -1,0 +1,165 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block navbar %}
+{% include 'homepage/magic-nav.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="row g-3 text-white">
+    {% if user.is_superuser %}
+    <div class="container-xl">
+        <div class="table-responsive">
+            <div class="table-wrapper">
+                <div class="table-title">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <h2>User's <b>Management</b></h2>
+                        </div>
+                        <div class="col-sm-4">
+                            <a href="#" class="btn btn-success"><i class="fas fa-user-plus fa-lg fa-fw"></i> <span>Add New User</span></a>
+                            <a href="#" class="btn btn-success"><i class="fas fa-file-alt fa-lg fa-fw"></i> <span>Export to Excel</span></a>						
+                        </div>
+                    </div>
+                </div>
+                <table class="table text-white">
+                    <thead>
+                        <tr>
+                            <th>
+								<span class="custom-checkbox">
+									<input type="checkbox" id="selectAll">
+									<label for="selectAll"></label>
+								</span>
+							</th>
+                            <th>#</th>
+                            <th>Username</th>						
+                            <th>Email</th>
+                            <th>Birthdate</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Date Joined</th>
+                            <th>Role</th>
+                            <th>Active</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr><!--Using this convention to get access to users_age list with users and age information-->
+                            <td>
+								<span class="custom-checkbox">
+									<input type="checkbox" name="options[]" value="1">
+								</span>
+							</td>
+                            <td>{{user.user.id}}</td>
+                            <td>{{user.user.username}}</td>
+                            <td>{{user.user.email}}</td>                        
+                            <td>{{user.user.birthdate}}</td>
+                            <td>{{user.age}}</td>
+                            <td>{{user.user.gender}}</td>
+                            <td>{{user.user.date_joined}}</td>
+                            <td>{{user.user.user_type.capitalize}}</td>
+                            <td><span class="status text-success">&bull;</span>{{user.user.is_active}}</td>
+                            <td>
+                                <a class="edit" data-bs-toggle="modal" data-bs-target="#editUserModal" onclick="loadUserDetails('{{user.user.id}}')"><i class="fas fa-user-edit fa-lg fa-fw text-success" data-toggle="tooltip" title="Edit"></i></a>
+                                <a href="#" class="delete" ><i class="fas fa-user-times fa-lg fa-fw text-success" title="Delete" data-toggle="tooltip"></i></a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center bg-warning">No users registered in system!!!</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal HTML -->
+    <div id="editUserModal" class="modal fade" tabindex="-1" aria-labelledby="editUserModal">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark">
+                <div class="modal-header">
+                    <h4 class="modal-title text-success">Edit User</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                {% block modal %}
+                {% include 'users/user_form.html' %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+
+    {% endif %} 
+</div>
+{% endblock content %}
+
+{% block script %}
+<script>
+    document.getElementById('users').classList.add('active');
+</script>
+
+<script>
+    function loadUserDetails(userId) {
+        $.ajax({
+            url: '/users/'+ userId +'/edit/'  ,
+            type: 'GET',
+            success: function(data) {
+                $('#userDetails').html(data);
+            },
+            error: function() {
+                alert('Error loading user details');
+            }
+        });
+    }
+
+    function updateUser() {
+        let formData = $('#userForm').serialize();
+        $.ajax({
+            url: $('#userForm').attr('action'),
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                if (response.status === 'success') {
+                    alert(response.message);
+                    $('#editUserModal').modal('hide');
+                    location.reload();
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function() {
+                alert('Error updating user');
+            }
+        });
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Activate tooltip
+        $('[data-toggle="tooltip"]').tooltip();
+
+        // Select/Deselect checkboxes
+        let checkbox = $('table tbody input[type="checkbox"]');
+        $("#selectAll").click(function () {
+            if (this.checked) {
+                checkbox.each(function () {
+                    this.checked = true;
+                });
+            } else {
+                checkbox.each(function () {
+                    this.checked = false;
+                });
+            }
+        });
+        checkbox.click(function () {
+            if (!this.checked) {
+                $("#selectAll").prop("checked", false);
+            }
+        });
+    });
+</script>
+{% endblock script %}
