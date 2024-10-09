@@ -72,15 +72,20 @@
                     </h2>
                     <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionProfile">
                       <div class="accordion-body bg-dark">
-                        <p><strong>Last Consultation:</strong> {{ last_consultation.consultation.consultation_date }}</p>
-                        <p><strong>Consulted by:</strong> Dr.{{ last_consultation.consultation.doctor.user.get_full_name }}</p>
-                        <p><strong>Consultation type:</strong> {{ last_consultation.consultation_type.capitalize }}</p>
-                        
-                        <p><strong>Temperature:</strong> {{ last_vital_signs.temperature }}</p>
-                        <p><strong>Pulse:</strong> {{ last_vital_signs.pulse }}</p>
-                        <p><strong>Systolic Pressure:</strong> {{ last_vital_signs.systolic_pressure }}</p>
-                        <p><strong>Diastolic Pressure:</strong> {{ last_vital_signs.diastolic_pressure }}</p>
-                      </div>
+                        {% if no_consultations %}
+                        <p>You have no consultations registered yet!!</p>
+                        {% else %}
+                            <p><strong>Last Consultation:</strong> {{ last_consultation.consultation.consultation_date }}</p>
+                            <p><strong>Consulted by:</strong> Dr.{{ last_consultation.consultation.doctor.user.get_full_name }}</p>
+                            <p><strong>Consultation type:</strong> {{ last_consultation.consultation_type.capitalize }}</p>
+                            <p><strong>Notes:</strong> {{ last_consultation.consultation.notes }}</p>
+                            
+                            <p><strong>Temperature:</strong> {{ last_vital_signs.temperature }}</p>
+                            <p><strong>Pulse:</strong> {{ last_vital_signs.pulse }}</p>
+                            <p><strong>Systolic Pressure:</strong> {{ last_vital_signs.systolic_pressure }}</p>
+                            <p><strong>Diastolic Pressure:</strong> {{ last_vital_signs.diastolic_pressure }}</p>
+                        {% endif %}
+                        </div>
                     </div>
                 </div>
                 {% endif %}

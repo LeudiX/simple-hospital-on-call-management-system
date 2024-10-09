@@ -52,5 +52,10 @@ project, i recommend delete all the migrations files, pycache or just the db.
 -Type *python manage.py createsuperuser*
 
 TODO:
--Add querysets according to business model
--Add last vital signs summary to personal patient profile
+-Add consultations management on admin session
+-Hide add users button on user management
+-Add search filter bar and pagination to users management (Or use datatables instead)
+-Change color of active field to red when user get deactivated
+-Add a mass removal for users management
+-Add links to Common and Urgency services for authenticated and enrolled users only
+-Check Vital Signs validation when creating a new consultation by doctor

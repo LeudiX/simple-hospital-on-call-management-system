@@ -23,17 +23,10 @@ def register(request):
             password1 = form.cleaned_data['password1']
             password2 = form.cleaned_data['password2']
             birthdate = form.cleaned_data['birthdate']
-            user_type = form.cleaned_data['user_type']
             
             if password1 == password2:
                 user.set_password(password1)
                 user.save()
-                """
-                if user_type == 'patient':
-                    patient = Patient.objects.create(user=user) #Fix
-                elif user_type == 'doctor':
-                    Doctor.objects.create(user=user) #Fix
-                """
                 date_output = birthdate.strftime("%Y-%m-%d")
                 messages.success(request,f'Your account has been succesfully created {username},  birthdate {date_output}! Proceed to Log In')
                 return redirect('login') #Redirect to the login page
@@ -74,11 +67,14 @@ def profile_view(request):
             last_vital_signs = None
             if last_consultation:
                 last_vital_signs = VitalSigns.objects.filter(consultation= last_consultation.consultation).first()
-               
+            
             initial_data['address']=patient_profile.address
             initial_data['medical_history'] = patient_profile.medical_history    
         except Patient.DoesNotExist:
             patient_profile = None
+            # Handle the case where the patient has no consultations.
+            last_consultation = None
+            last_vital_signs = None
     
     if request.method == 'POST':
        
@@ -91,13 +87,13 @@ def profile_view(request):
                 doctor_profile.specialty = form.cleaned_data['specialty']
                 doctor_profile.experience = form.cleaned_data['experience']
                 doctor_profile.save()
-                messages.success(request,f'Doctor {doctor_profile.user.get_full_name()} profile successfully added to registry!')
+                messages.success(request,f'Doctor {doctor_profile.user.get_full_name()} profile successfully updated in registry!')
             elif user.user_type == 'patient':
                 patient_profile, created = Patient.objects.get_or_create(user=user)
                 patient_profile.address = form.cleaned_data['address']
                 patient_profile.medical_history = form.cleaned_data['medical_history']
                 patient_profile.save()
-                messages.success(request,f'Patient {patient_profile.user.get_full_name()} profile successfully added to registry!')
+                messages.success(request,f'Patient {patient_profile.user.get_full_name()} profile successfully updated in registry!')
             return redirect('profile') 
     else:
         form = ProfileForm(instance=user, user=user,initial=initial_data)
@@ -107,9 +103,12 @@ def profile_view(request):
         'age':age,
         'doctor':doctor_profile if user.user_type == 'doctor' else None, #Accessing current doctor info if present in session
         'patient': patient_profile if user.user_type == 'patient' else None, #Accessing current patient info if present in session
-        'last_consultation': last_consultation if user.user_type == 'patient' else None,
-        'last_vital_signs': last_vital_signs if user.user_type == 'patient' else None,
+        'last_consultation': last_consultation if user.user_type == 'patient' and last_consultation else None,
+        'last_vital_signs': last_vital_signs if user.user_type == 'patient' and last_vital_signs else None,
         }   
+    
+    if user.user_type == 'patient' and not last_consultation:
+        context['no_consultations'] = True
     
     return render(request, 'users/profile.html',context)
 
@@ -152,7 +151,7 @@ def edit_user(request,id):
 
     return render(request,'users/update_user_form.html',context)
 
-
+"""Custom view for handle users removal in system administration"""
 @login_required
 def delete_user(request,id):
     user = get_object_or_404(CustomUser,id=id) # Ensure the user exists

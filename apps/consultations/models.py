@@ -88,6 +88,7 @@ class VitalSigns(models.Model):
                                     validators=[MinValueValidator(36.5),MaxValueValidator(42.5)],
                                     verbose_name='Body temperature',
                                     help_text="Patient's body temperature in degrees Celsius",
+                                    error_messages='Please, select a value between 36.5 and 42.5',
                                     null=True,   # Allows the field to be null if temperature is unknown
                                     blank=True)  # Allows the field to be blank in forms 
 
@@ -96,6 +97,7 @@ class VitalSigns(models.Model):
         validators=[MinValueValidator(40),MaxValueValidator(120)],
         verbose_name='Pulse Rate',
         help_text="Patient's pulse rate in beats per minute",
+        error_messages='Please, select a value between 40 and 120',
         null=True,  # Allows the field to be null if pulse is unknown
         blank=True) # Allows the field to be blank in forms 
     
@@ -106,6 +108,7 @@ class VitalSigns(models.Model):
         max_digits=5,
         decimal_places=2,
         validators=[MinValueValidator(90),MaxValueValidator(140)],
+        error_messages='Please, select a value between 90 and 140',
         null=True,  # Allows the field to be null if blood pressure is unknown
         blank=True,  # Allows the field to be blank in forms
     )
@@ -115,6 +118,7 @@ class VitalSigns(models.Model):
         max_digits=5,
         decimal_places=2,
         validators=[MinValueValidator(60),MaxValueValidator(90)],
+        error_messages='Please, select a value between 60 and 90',
         null=True,  # Allows the field to be null if blood pressure is unknown
         blank=True,  # Allows the field to be blank in forms
     )

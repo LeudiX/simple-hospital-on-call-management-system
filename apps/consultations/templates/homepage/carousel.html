@@ -14,9 +14,14 @@
                                 Ms.{{user.username.capitalize}}    
                             {% endif %}
                         </strong>
-                            <!--User's type capitalized -->
-                        <hr> Role:<strong class="text-white"> {{ user.user_type.capitalize }}</strong> 
                         <hr> Birthdate: <strong class="text-white"> {{user.birthdate}}</strong>
+                        {% if user.is_patient or user.is_doctor %}
+                         <!--User's type capitalized -->
+                         <hr> Role:<strong class="text-white"> {{ user.user_type.capitalize }}</strong> 
+                        {% else %}
+                         <!--User's type capitalized -->
+                         <hr><strong class="text-warning text-center"> You currently don't have any associated role</strong> 
+                        {% endif %}
                 </h5>    
             </div>
         {% endif %}

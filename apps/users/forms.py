@@ -32,13 +32,13 @@ class RegistrationForm(UserCreationForm):
         widget=forms.DateInput(attrs={'class':'datepicker','type':'date'}),
         )
 
-    user_type = forms.ChoiceField(choices=[('','Choose user role')]+list(CustomUser.USER_TYPE_CHOICES),required=True)    
+    #user_type = forms.ChoiceField(choices=[('','Choose user role')]+list(CustomUser.USER_TYPE_CHOICES),required=True)    
     
     gender = forms.ChoiceField(choices=[('','Choose your gender')]+list(CustomUser.GENDER_CHOICES),required=True)    
         
     class Meta:
         model = CustomUser
-        fields = ('username','first_name','last_name', 'email','user_type','birthdate','gender') # Fields to edit
+        fields = ('username','first_name','last_name', 'email','birthdate','gender') # Fields to edit
 
 """User's update form (ADMIN Tasks)"""
 class CustomUserChangeForm(forms.ModelForm):
