@@ -102,6 +102,7 @@
 </script>
 
 <script>
+    /*Used for load user details inside modal*/
     function loadUserDetails(userId) {
         $.ajax({
             url: '/users/'+ userId +'/edit/'  ,
@@ -111,27 +112,6 @@
             },
             error: function() {
                 alert('Error loading user details');
-            }
-        });
-    }
-
-    function updateUser() {
-        let formData = $('#userForm').serialize();
-        $.ajax({
-            url: $('#userForm').attr('action'),
-            type: 'POST',
-            data: formData,
-            success: function(response) {
-                if (response.status === 'success') {
-                    alert(response.message);
-                    $('#editUserModal').modal('hide');
-                    location.reload();
-                } else {
-                    alert(response.message);
-                }
-            },
-            error: function() {
-                alert('Error updating user');
             }
         });
     }

@@ -1,3 +1,10 @@
+/*Personal styles for error classes not supported by bootstrap*/
+.alert.alert-error {
+    color: whitesmoke !important;
+    background-color: #ee2f40 !important;
+    border-color: #ffffff6a !important;
+}
+
 body {
     overflow-y: scroll; /* Add the ability to scroll */
     -ms-overflow-style: none;  /* Hiding the scrollbar on  IE and Edge */
@@ -8,11 +15,3 @@ body::-webkit-scrollbar{
     display: none; /*Hiding the scrollbar on Chrome*/
 }
 
-/*Personal styles for error classes not supported by bootstrap*/
-/*
-.alert-error {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-}
-*/

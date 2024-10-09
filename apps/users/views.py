@@ -81,7 +81,6 @@ def profile_view(request):
             patient_profile = None
     
     if request.method == 'POST':
-        print(f'{request.POST}') # For debugging pourposes only
        
         form = ProfileForm(request.POST, instance=user, user=user,initial=initial_data)
         
@@ -114,7 +113,7 @@ def profile_view(request):
     
     return render(request, 'users/profile.html',context)
 
-"""Custom view for handle users administration in system """
+"""Custom view for list users in system administration"""
 @login_required
 def list_users(request):
     # Excluding superusers by filtering out users where is_superuser is True
@@ -130,24 +129,25 @@ def list_users(request):
         })
     return render(request,'users/list_users.html',{'users':users_age})
 
+"""Custom view for handle users edition in system administration"""
 @login_required
 def edit_users(request,id):
-    user = get_object_or_404(CustomUser, id=id)
+    user = get_object_or_404(CustomUser, id=id) # Ensure the user exists
     
     if request.method == 'POST':       
         form = CustomUserChangeForm(request.POST,instance=user)
         if form.is_valid():
            form.save()
            messages.success(request,f'User {user.username} updated successfully')
-           return JsonResponse({'status':'success'})
-           #return redirect('users')
+           return redirect('users')
         else:
-            return JsonResponse({'status':'error','errors':form.errors})   
+            return messages.error({'status':'error','errors':form.errors})   
     else:
         form = CustomUserChangeForm(instance=user)
         
     context = {
-        'form':form
+        'form':form, # Sending the form data and values to context
+        'user':user # Sending the user instance to context
     }
 
     return render(request,'users/user_form.html',context)
