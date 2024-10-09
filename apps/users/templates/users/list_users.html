@@ -63,7 +63,7 @@
                             <td><span class="status text-success">&bull;</span>{{user.user.is_active}}</td>
                             <td>
                                 <a class="edit" data-bs-toggle="modal" data-bs-target="#editUserModal" onclick="loadUserDetails('{{user.user.id}}')"><i class="fas fa-user-edit fa-lg fa-fw text-success" data-toggle="tooltip" title="Edit"></i></a>
-                                <a href="#" class="delete" ><i class="fas fa-user-times fa-lg fa-fw text-success" title="Delete" data-toggle="tooltip"></i></a>
+                                <a class="delete" data-bs-toggle="modal" data-bs-target="#deleteUserModal" onclick="loadDeleteUserConfirm('{{user.user.id}}')" ><i class="fas fa-user-times fa-lg fa-fw text-danger" data-toggle="tooltip" title="Delete"></i></a>
                             </td>
                         </tr>
                     {% empty %}
@@ -85,8 +85,23 @@
                     <h4 class="modal-title text-success">Edit User</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                 </div>
-                {% block modal %}
-                {% include 'users/user_form.html' %}
+                {% block editUserModal %}
+                {% include 'users/update_user_form.html' %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal HTML -->
+    <div id="deleteUserModal" class="modal fade" tabindex="-1" aria-labelledby="deleteUserModal">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark">
+                <div class="modal-header">
+                    <h4 class="modal-title text-success">Delete User</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                {% block deleteUserModal %}
+                {% include 'users/delete_user_confirm.html' %}
                 {% endblock %}
             </div>
         </div>
@@ -108,10 +123,24 @@
             url: '/users/'+ userId +'/edit/'  ,
             type: 'GET',
             success: function(data) {
-                $('#userDetails').html(data);
+                $('#userDetails').html(data);  // Insert user details into editUserModal
             },
             error: function() {
                 alert('Error loading user details');
+            }
+        });
+    }
+
+    // Function to load the delete confirmation into the modal
+    function loadDeleteUserConfirm(userId) {
+        $.ajax({
+            url: '/users/' + userId + '/delete/',
+            type: 'GET',
+            success: function(data) {
+                $('#deleteUserConfirm').html(data);  // Insert the confirmation message into deleteUserModal
+            },
+            error: function() {
+                alert('Error loading delete confirmation');
             }
         });
     }

@@ -131,7 +131,7 @@ def list_users(request):
 
 """Custom view for handle users edition in system administration"""
 @login_required
-def edit_users(request,id):
+def edit_user(request,id):
     user = get_object_or_404(CustomUser, id=id) # Ensure the user exists
     
     if request.method == 'POST':       
@@ -141,7 +141,7 @@ def edit_users(request,id):
            messages.success(request,f'User {user.username} updated successfully')
            return redirect('users')
         else:
-            return messages.error({'status':'error','errors':form.errors})   
+            return messages.warning(request,f'Errors updating {user.username} : {form.errors}')   
     else:
         form = CustomUserChangeForm(instance=user)
         
@@ -150,4 +150,15 @@ def edit_users(request,id):
         'user':user # Sending the user instance to context
     }
 
-    return render(request,'users/user_form.html',context)
+    return render(request,'users/update_user_form.html',context)
+
+
+@login_required
+def delete_user(request,id):
+    user = get_object_or_404(CustomUser,id=id) # Ensure the user exists
+    
+    if request.method =='POST':
+        user.delete()
+        messages.success(request,f'User {user.username} removed successfully')
+        return redirect('users') # Redirect after successful deletion
+    return render(request, 'users/delete_user_confirm.html', {'user': user}) # Render a confirmation prompt to be loaded into the modal via AJAX
