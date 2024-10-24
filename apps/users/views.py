@@ -9,6 +9,8 @@ from .forms import RegistrationForm,ProfileForm,CustomUserChangeForm
 from .models import CustomUser,Doctor, Patient
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
+import json
+from django.views.decorators.csrf import csrf_exempt
 
 
 """_Custom view for register a new user in system _"""
@@ -161,3 +163,23 @@ def delete_user(request,id):
         messages.success(request,f'User {user.username} removed successfully')
         return redirect('users') # Redirect after successful deletion
     return render(request, 'users/delete_user_confirm.html', {'user': user}) # Render a confirmation prompt to be loaded into the modal via AJAX
+
+"""Custom view for handle mass users removal in system administration"""
+@login_required
+def delete_users(request):
+    if request.method == 'POST':
+        user_ids = request.POST.get('user_ids')  # Fetch the user_ids from the request
+        
+        if user_ids:
+            user_ids_list = user_ids.split(',')  # Split the string to get the list of IDs
+        
+            try:
+                # Convert user IDs to integers and perform deletion
+                users_to_delete = CustomUser.objects.filter(id__in=user_ids_list)
+                users_to_delete.delete()
+                return JsonResponse({'success': True, 'message': 'Users deleted successfully!'})
+            except Exception as e:
+                return JsonResponse({'success': False, 'message': str(e)})
+        else:
+            return JsonResponse({'success': False, 'message': 'No user IDs received!'})
+    return JsonResponse({'success': False, 'message':'Invalid request method'})

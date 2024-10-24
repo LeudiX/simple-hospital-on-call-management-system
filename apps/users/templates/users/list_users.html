@@ -14,70 +14,108 @@
             <div class="table-wrapper">
                 <div class="table-title">
                     <div class="row">
-                        <div class="col-sm-8">
+                        <div class="col-sm-6">
                             <h2>User's <b>Management</b></h2>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6 justify-content-end">
+                            <!-- Button for mass users delete, initially hidden -->
+                            <button id="delete-button" class="btn btn-danger" style="display: none;">
+                                <i class="fas fa-user-times fa-lg fa-fw"></i>
+                                Delete Selected Users
+                            </button>
                             <a href="#" class="btn btn-success"><i class="fas fa-user-plus fa-lg fa-fw"></i> <span>Add New User</span></a>
                             <a href="#" class="btn btn-success"><i class="fas fa-file-alt fa-lg fa-fw"></i> <span>Export to Excel</span></a>						
                         </div>
                     </div>
                 </div>
-                <table class="table text-white">
-                    <thead>
-                        <tr>
-                            <th>
-								<span class="custom-checkbox">
-									<input type="checkbox" id="selectAll">
-									<label for="selectAll"></label>
-								</span>
-							</th>
-                            <th>#</th>
-                            <th>Username</th>						
-                            <th>Email</th>
-                            <th>Birthdate</th>
-                            <th>Age</th>
-                            <th>Gender</th>
-                            <th>Date Joined</th>
-                            <th>Role</th>
-                            <th>Active</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in users %}
-                        <tr><!--Using this convention to get access to users_age list with users and age information-->
-                            <td>
-								<span class="custom-checkbox">
-									<input type="checkbox" name="options[]" value="1">
-								</span>
-							</td>
-                            <td>{{user.user.id}}</td>
-                            <td>{{user.user.username}}</td>
-                            <td>{{user.user.email}}</td>                        
-                            <td>{{user.user.birthdate}}</td>
-                            <td>{{user.age}}</td>
-                            <td>{{user.user.gender}}</td>
-                            <td>{{user.user.date_joined}}</td>
-                            <td>{{user.user.user_type.capitalize}}</td>
-                            <td><span class="status text-success">&bull;</span>{{user.user.is_active}}</td>
-                            <td>
-                                <a class="edit" data-bs-toggle="modal" data-bs-target="#editUserModal" onclick="loadUserDetails('{{user.user.id}}')"><i class="fas fa-user-edit fa-lg fa-fw text-success" data-toggle="tooltip" title="Edit"></i></a>
-                                <a class="delete" data-bs-toggle="modal" data-bs-target="#deleteUserModal" onclick="loadDeleteUserConfirm('{{user.user.id}}')" ><i class="fas fa-user-times fa-lg fa-fw text-danger" data-toggle="tooltip" title="Delete"></i></a>
-                            </td>
-                        </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="7" class="text-center bg-warning">No users registered in system!!!</td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                <!--Sample form for mass users removal-->
+                <form id="delete-form" method="POST" action="{% url 'delete_users' %}">
+                    <!--Custom CSRF Token reference for AJAX treatment-->
+                    {% csrf_token %}
+                    <!--Users table-->
+                    <table class="table text-white">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <!-- Checkbox parent -->
+                                    <span class="custom-checkbox">
+                                        <input type="checkbox" id="selectAll">
+                                        <label for="selectAll"></label>
+                                    </span>
+                                </th>
+                                <th>#</th>
+                                <th>Username</th>						
+                                <th>Email</th>
+                                <th>Birthdate</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Date Joined</th>
+                                <th>Role</th>
+                                <th>Active</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr><!--Using this convention to get access to users_age list with users and age information-->
+                                <td>
+                                    <!-- Checkbox childs -->
+                                    <span class="custom-checkbox">
+                                        <input type="checkbox" class="user-checkbox" value="{{ user.user.id }}">
+                                    </span>
+                                </td>
+                                <td>{{user.user.id}}</td>
+                                <td>{{user.user.username}}</td>
+                                <td>{{user.user.email}}</td>                        
+                                <td>{{user.user.birthdate}}</td>
+                                <td>{{user.age}}</td>
+                                <td>{{user.user.gender}}</td>
+                                <td>{{user.user.date_joined}}</td>
+                                <td>{{user.user.user_type.capitalize}}</td>
+                                <td>{% if user.user.is_active%}<span class="status text-success fw-bold">Yes</span>{% else %}<span class="status text-danger fw-bold">No</span>{% endif %}</td>
+                                <td>
+                                    <a class="edit" data-bs-toggle="modal" data-bs-target="#editUserModal" onclick="loadUserDetails('{{user.user.id}}')"><i class="fas fa-user-edit fa-lg fa-fw text-success" data-toggle="tooltip" title="Edit"></i></a>
+                                    <a class="delete" data-bs-toggle="modal" data-bs-target="#deleteUserModal" onclick="loadDeleteUserConfirm('{{user.user.id}}')" ><i class="fas fa-user-times fa-lg fa-fw text-danger" data-toggle="tooltip" title="Delete"></i></a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center bg-warning">No users registered in system!!!</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                     <!-- Hidden input to store the selected user IDs -->
+                    <input type="hidden" name="user_ids" id="user-ids" value="">
+
+                    <!--Massive User Modal Confirmation -->
+                    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content bg-dark">
+                            <div class="modal-header">
+                            <h4 class="modal-title text-warning" id="deleteModalLabel">Confirm User Mass Removal</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class = "d-flex justify-content-center">
+                                    <p>
+                                        <i class="fa fa-exclamation-triangle fa-lg fa-fw text-warning"></i>
+                                        Are you sure you want to delete the selected users?
+                                    </p>    
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger" id="confirm-delete">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>  
             </div>
         </div>
     </div>
 
-    <!-- Edit Modal HTML -->
+    <!-- Edit User Modal HTML -->
     <div id="editUserModal" class="modal fade" tabindex="-1" aria-labelledby="editUserModal">
         <div class="modal-dialog">
             <div class="modal-content bg-dark">
@@ -92,12 +130,12 @@
         </div>
     </div>
 
-    <!-- Delete Modal HTML -->
+    <!-- Delete User Modal HTML -->
     <div id="deleteUserModal" class="modal fade" tabindex="-1" aria-labelledby="deleteUserModal">
         <div class="modal-dialog">
             <div class="modal-content bg-dark">
                 <div class="modal-header">
-                    <h4 class="modal-title text-success">Delete User</h4>
+                    <h4 class="modal-title text-warning">Delete User</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                 </div>
                 {% block deleteUserModal %}
@@ -106,13 +144,13 @@
             </div>
         </div>
     </div>
-
     {% endif %} 
 </div>
 {% endblock content %}
 
 {% block script %}
 <script>
+    /*Active users nav item on load view*/
     document.getElementById('users').classList.add('active');
 </script>
 
@@ -147,27 +185,90 @@
 </script>
 
 <script>
+    /*Mass user removal behaviour*/
     $(document).ready(function () {
+
         // Activate tooltip
         $('[data-toggle="tooltip"]').tooltip();
 
-        // Select/Deselect checkboxes
-        let checkbox = $('table tbody input[type="checkbox"]');
-        $("#selectAll").click(function () {
-            if (this.checked) {
-                checkbox.each(function () {
-                    this.checked = true;
+        const selectAllCheckBox = $("#selectAll");
+        const deleteBtn = $('#delete-button');
+        const confirmdeleteBtn = $('#confirm-delete');
+        let checkbox_childs = $('.user-checkbox');
+
+        // Function to toggle delete button visibility
+        $.fn.toggleDeleteButton = function(){
+            let checkedCount = $('.user-checkbox:checked').length;
+            deleteBtn.toggle(checkedCount>0)
+        }
+
+        // Select/Deselect child checkboxes inside the table
+        selectAllCheckBox.click(function () {
+           checkbox_childs.prop('checked', this.checked);
+           $.fn.toggleDeleteButton();
+        });
+
+        // If one of the child checkboxes get deselected, deselect the parent as well 
+        checkbox_childs.change(function () {
+            if(!this.checked)
+                selectAllCheckBox.prop('checked',false);
+            $.fn.toggleDeleteButton();
+        });
+
+        // Show the modal when the delete button is clicked
+        deleteBtn.on('click', function () {
+            let selectedUsers = $('.user-checkbox:checked').map( function(){    
+            return $(this).val();
+            }).get();
+
+            if (selectedUsers.length > 0 ){
+                let deleteModal = new bootstrap.Modal($('#deleteModal'), {});
+                deleteModal.show();
+            } else {
+                alert('No users selected');
+            }  
+        })
+
+        // Handle the delete confirmation action on modal
+        confirmdeleteBtn.on('click',()=>{
+            let selectedUsers = $('.user-checkbox:checked').map(function(){
+                return $(this).val();
+            }).get();
+            
+            console.log('Selected Users:', selectedUsers);  // Debugging: Log the selected user IDs
+
+            if(selectedUsers.length >0){
+                // Set the selected user IDs in the hidden input
+                $('#user-ids').val(selectedUsers.join(','));
+
+                console.log('User IDs to be deleted:', $('#user-ids').val());  // Debugging: Log the user_ids input value
+           
+                //AJAX request to delete users
+                $.ajax({
+                url:$('#delete-form').attr('action'),
+                type:'POST',
+                data: $('#delete-form').serialize(),
+                success: function(data){
+                    console.log(data);  // Log the server response to check if it is reaching here
+                    if(data.success){
+                        // Display success message from the server
+                        $('#ajax-message').html(`<div class= "alert alert-sucess">${data.message}</div>`);
+                        setTimeout(()=>{
+                            location.reload(); //Reload the page after loading the message
+                        },1500);    
+                    } else {
+                            //Display error messages from the server
+                            $('#ajax-message').html(`<div class="alert alert-danger">${data.message}</div>`);
+                    }
+                },
+                error: (xhr,status,error)=>{
+                    console.log(xhr.responseText);  // Log the response in case of an error
+                    $('#ajax-message').html('<div class="alert alert-danger">An unexpected error occurred.</div>');
+                }
                 });
             } else {
-                checkbox.each(function () {
-                    this.checked = false;
-                });
-            }
-        });
-        checkbox.click(function () {
-            if (!this.checked) {
-                $("#selectAll").prop("checked", false);
-            }
+                alert('No users selected for deletion!');
+              }
         });
     });
 </script>
