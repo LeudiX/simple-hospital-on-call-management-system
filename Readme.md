@@ -58,6 +58,8 @@ TODO:
 -Add search filter bar and pagination to users management (Or use datatables instead)
 -*DONE* Change color of active field to red when user get deactivated 
 -*DONE* Add a mass removal for users management
--Check mass removal action message not showing in UI
--Add links to Common and Urgency services for authenticated and enrolled users only
+-*DONE*Check mass removal action message not showing in UI
+-*DONE*Add links to Common and Urgency services for authenticated and enrolled users only
 -Check Vital Signs validation when creating a new consultation by doctor
+-Solve issue when trying to submit a logout form already outside a session (JS issue)
+-Change consultation_type choie from Regular to Common choice and migrate

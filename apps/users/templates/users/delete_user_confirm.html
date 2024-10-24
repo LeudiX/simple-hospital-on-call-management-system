@@ -1,15 +1,15 @@
 {% load static %}
-{% load crispy_forms_tags %}
-    <!--Custom modal form with crispy_forms_tags for user removal-->
-    <div class="modal-body" id="deleteUserConfirm">
+<!--Custom modal form for user removal-->
+<div class="modal-body" id="deleteUserConfirm">
         <form id="deleteUserForm" action="{% url 'delete_user' user.id %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="user_id" value="{{ user.id }}">
             <div class ="d-flex justify-content-center">
                 <p> 
                     <i class="fa fa-exclamation-triangle fa-lg fa-fw text-warning"></i>
-                    Are you sure you want to delete user 
-                    <strong class="text-info" >{{ user.username }}</strong>?
+                    Are you sure you want to delete user
+                    <strong class="text-danger">{{ user.username }}</strong>
+                    🤔?
                 </p>
             </div>
             
@@ -18,4 +18,4 @@
                 <input type="submit" class="btn btn-danger"  value="Delete">
             </div>
         </form>
-    </div>
+</div>

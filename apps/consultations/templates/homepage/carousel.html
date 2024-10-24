@@ -20,35 +20,46 @@
                          <hr> Role:<strong class="text-white"> {{ user.user_type.capitalize }}</strong> 
                         {% else %}
                          <!--User's type capitalized -->
-                         <hr><strong class="text-warning text-center"> You currently don't have any associated role</strong> 
+                         <hr><strong class="text-warning text-center"> <span class="text-danger text-center">You currently don't have any associated role.</span> <br> Wait for the admins to enroll you into the system!!</strong> 
                         {% endif %}
                 </h5>    
             </div>
         {% endif %}
         <div class="px-5 text-white">
-            <h4 class = "text-uppercase text-success">
-                {% if user.is_authenticated %} 
+            
+                {% if user.is_patient %} 
+                <h4 class = "text-uppercase text-success">
                     Access to services
-                    {% else %}
-                    Services
-                {% endif %}
-            </h4>
-                <div class="my-2">
-                   <a href="#" style="text-decoration: none;">
-                    <span class="icon text-success">
-                        <i class="fas fa-clinic-medical fa-lg fa-fw"></i>
-                    </span>
-                    <span class="text-white">Common Consultations</span>
-                   </a> 
-                </div>
+                </h4>  
                 <div class="my-2">
                     <a href="#" style="text-decoration: none;">
-                       <span class="icon text-success"> 
-                        <i class="fas fa-clinic-medical fa-lg fa-fw"></i>
-                        </span> 
-                       <span class="text-white">Urgency Consultations</span> 
-                    </a>
-                </div>
+                     <span class="icon text-success">
+                         <i class="fas fa-clinic-medical fa-lg fa-fw"></i>
+                     </span>
+                     <span class="text-white">Consultation history</span>
+                    </a> 
+                </div> 
+                {% elif user.is_doctor %}
+                <h4 class = "text-uppercase text-success">
+                    Services
+                </h4>
+                <div class="my-2">
+                    <a href="#" style="text-decoration: none;">
+                     <span class="icon text-success">
+                         <i class="fas fa-clinic-medical fa-lg fa-fw"></i>
+                     </span>
+                     <span class="text-white">Common Consultations</span>
+                    </a> 
+                 </div>
+                 <div class="my-2">
+                     <a href="#" style="text-decoration: none;">
+                        <span class="icon text-success"> 
+                         <i class="fas fa-clinic-medical fa-lg fa-fw"></i>
+                         </span> 
+                        <span class="text-white">Urgency Consultations</span> 
+                     </a>
+                 </div>
+                {% endif %}
         </div>
     </div>
     <div class="col-md-8">

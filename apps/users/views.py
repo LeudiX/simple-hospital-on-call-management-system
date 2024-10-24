@@ -30,7 +30,7 @@ def register(request):
                 user.set_password(password1)
                 user.save()
                 date_output = birthdate.strftime("%Y-%m-%d")
-                messages.success(request,f'Your account has been succesfully created {username},  birthdate {date_output}! Proceed to Log In')
+                messages.success(request,f'Your account has been succesfully created {username},  birthdate {date_output}! Proceed to Log In😊')
                 return redirect('login') #Redirect to the login page
             else:
                 #Handling password mismatch error
@@ -89,13 +89,13 @@ def profile_view(request):
                 doctor_profile.specialty = form.cleaned_data['specialty']
                 doctor_profile.experience = form.cleaned_data['experience']
                 doctor_profile.save()
-                messages.success(request,f'Doctor {doctor_profile.user.get_full_name()} profile successfully updated in registry!')
+                messages.success(request,f'Doctor {doctor_profile.user.get_full_name()} profile successfully updated in registry!😊')
             elif user.user_type == 'patient':
                 patient_profile, created = Patient.objects.get_or_create(user=user)
                 patient_profile.address = form.cleaned_data['address']
                 patient_profile.medical_history = form.cleaned_data['medical_history']
                 patient_profile.save()
-                messages.success(request,f'Patient {patient_profile.user.get_full_name()} profile successfully updated in registry!')
+                messages.success(request,f'Patient {patient_profile.user.get_full_name()} profile successfully updated in registry!😊')
             return redirect('profile') 
     else:
         form = ProfileForm(instance=user, user=user,initial=initial_data)
@@ -139,10 +139,10 @@ def edit_user(request,id):
         form = CustomUserChangeForm(request.POST,instance=user)
         if form.is_valid():
            form.save()
-           messages.success(request,f'User {user.username} updated successfully')
+           messages.success(request,f'User {user.username} updated successfully😊')
            return redirect('users')
         else:
-            return messages.warning(request,f'Errors updating {user.username} : {form.errors}')   
+            return messages.warning(request,f'Errors updating {user.username} : {form.errors}🤔')   
     else:
         form = CustomUserChangeForm(instance=user)
         
@@ -153,33 +153,49 @@ def edit_user(request,id):
 
     return render(request,'users/update_user_form.html',context)
 
-"""Custom view for handle users removal in system administration"""
+"""Custom view for handle user removal in system administration"""
 @login_required
 def delete_user(request,id):
     user = get_object_or_404(CustomUser,id=id) # Ensure the user exists
     
     if request.method =='POST':
         user.delete()
-        messages.success(request,f'User {user.username} removed successfully')
+        messages.success(request,f'User {user.username} removed successfully 😊')
         return redirect('users') # Redirect after successful deletion
     return render(request, 'users/delete_user_confirm.html', {'user': user}) # Render a confirmation prompt to be loaded into the modal via AJAX
 
 """Custom view for handle mass users removal in system administration"""
 @login_required
 def delete_users(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
+        user_ids = request.GET.get('user_ids')
+        if user_ids:
+            user_ids_list = user_ids.split(',')
+            users_to_delete = CustomUser.objects.filter(id__in=user_ids_list)
+            user_ids = ','.join(str(user.id) for user in users_to_delete) #Creating a string of comma-separated user IDs
+            return render(request, 'users/delete_users_confirm.html', {'users': users_to_delete, 'user_ids': user_ids})
+        messages.warning(request,'No users IDs provided!😬')
+        return redirect('users')
+
+    elif request.method == 'POST':
         user_ids = request.POST.get('user_ids')  # Fetch the user_ids from the request
         
         if user_ids:
             user_ids_list = user_ids.split(',')  # Split the string to get the list of IDs
-        
+            print(f'{user_ids_list}') # Debugging purposes only
             try:
                 # Convert user IDs to integers and perform deletion
                 users_to_delete = CustomUser.objects.filter(id__in=user_ids_list)
-                users_to_delete.delete()
-                return JsonResponse({'success': True, 'message': 'Users deleted successfully!'})
+                deleted_count, _= users_to_delete.delete()
+                messages.success(request,f'{deleted_count} users deleted successfully😊')
+                return redirect('users') # Redirect back to users listing page on sucess
             except Exception as e:
-                return JsonResponse({'success': False, 'message': str(e)})
+                messages.warning(request,f'Error:{str(e)}🤔')
+                return redirect('users') # Redirect back to users page on error
         else:
-            return JsonResponse({'success': False, 'message': 'No user IDs received!'})
-    return JsonResponse({'success': False, 'message':'Invalid request method'})
+            messages.warning(request,'No users IDs provided!😬')
+            return redirect('users')    # Redirect back to users page on error
+    messages.error(request,'Invalid request method!😬')
+    return redirect('users') # Redirect back to users page on error
+    
+   

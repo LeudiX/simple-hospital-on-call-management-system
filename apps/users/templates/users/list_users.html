@@ -19,8 +19,8 @@
                         </div>
                         <div class="col-sm-6 justify-content-end">
                             <!-- Button for mass users delete, initially hidden -->
-                            <button id="delete-button" class="btn btn-danger" style="display: none;">
-                                <i class="fas fa-user-times fa-lg fa-fw"></i>
+                            <button id="delete-button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteMultipleUserModal" onclick="loadDeleteMultipleUserConfirm()"  style="display: none;">
+                                <i class="fas fa-user-times fa-lg fa-fw" data-toggle="tooltip" title="Delete Multiple"></i>
                                 Delete Selected Users
                             </button>
                             <a href="#" class="btn btn-success"><i class="fas fa-user-plus fa-lg fa-fw"></i> <span>Add New User</span></a>
@@ -28,12 +28,8 @@
                         </div>
                     </div>
                 </div>
-                <!--Sample form for mass users removal-->
-                <form id="delete-form" method="POST" action="{% url 'delete_users' %}">
-                    <!--Custom CSRF Token reference for AJAX treatment-->
-                    {% csrf_token %}
-                    <!--Users table-->
-                    <table class="table text-white">
+                <!--Users table-->
+                <table class="table text-white">
                         <thead>
                             <tr>
                                 <th>
@@ -84,33 +80,7 @@
                             </tr>
                             {% endfor %}
                         </tbody>
-                    </table>
-                     <!-- Hidden input to store the selected user IDs -->
-                    <input type="hidden" name="user_ids" id="user-ids" value="">
-
-                    <!--Massive User Modal Confirmation -->
-                    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                        <div class="modal-content bg-dark">
-                            <div class="modal-header">
-                            <h4 class="modal-title text-warning" id="deleteModalLabel">Confirm User Mass Removal</h4>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class = "d-flex justify-content-center">
-                                    <p>
-                                        <i class="fa fa-exclamation-triangle fa-lg fa-fw text-warning"></i>
-                                        Are you sure you want to delete the selected users?
-                                    </p>    
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-danger" id="confirm-delete">Delete</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>  
+                </table>
             </div>
         </div>
     </div>
@@ -131,7 +101,7 @@
     </div>
 
     <!-- Delete User Modal HTML -->
-    <div id="deleteUserModal" class="modal fade" tabindex="-1" aria-labelledby="deleteUserModal">
+    <div id="deleteUserModal" class="modal fade" tabindex="-1" aria-labelledby="deleteUserModalLabel">
         <div class="modal-dialog">
             <div class="modal-content bg-dark">
                 <div class="modal-header">
@@ -141,6 +111,21 @@
                 {% block deleteUserModal %}
                 {% include 'users/delete_user_confirm.html' %}
                 {% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <!--Massive User Modal HTML -->
+    <div class="modal fade" id="deleteMultipleUserModal" tabindex="-1" aria-labelledby="deleteMUModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h4 class="modal-title text-warning" id="deleteMUModalLabel">Confirm User Mass Removal</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            {% block deleteMultipleUserModal %}
+            {% include 'users/delete_users_confirm.html' %}
+            {% endblock %}
             </div>
         </div>
     </div>
@@ -169,7 +154,7 @@
         });
     }
 
-    // Function to load the delete confirmation into the modal
+    // Function to load user delete confirmation into the modal
     function loadDeleteUserConfirm(userId) {
         $.ajax({
             url: '/users/' + userId + '/delete/',
@@ -181,6 +166,31 @@
                 alert('Error loading delete confirmation');
             }
         });
+    }
+    
+    // Function to gather selected user IDs and load confirmation modal
+    function loadDeleteMultipleUserConfirm(){
+        let selectedUsersIDs = [];
+        // Gather chequed checkboxes with class 'user-checkbox' for selecting users
+        $('input.user-checkbox:checked').each(function(){
+            selectedUsersIDs.push($(this).val());
+        })
+
+        if(selectedUsersIDs.length>0){
+            $.ajax({
+                url:'/users/delete-users/confirm',  // URL for the confirmation view
+                type: 'GET',
+                data:{user_ids:selectedUsersIDs.join(',')},  // Send selected user IDs
+                success: function(data){
+                    $('#deleteMultipleUserConfirm').html(data)  // Insert confirmation message into the modal
+                },
+                error: function(){
+                    alert('Error loading delete confirmation.');
+                }
+            });
+        } else {
+            alert('Please, select at least one user to delete.')
+        }
     }
 </script>
 
@@ -213,62 +223,6 @@
             if(!this.checked)
                 selectAllCheckBox.prop('checked',false);
             $.fn.toggleDeleteButton();
-        });
-
-        // Show the modal when the delete button is clicked
-        deleteBtn.on('click', function () {
-            let selectedUsers = $('.user-checkbox:checked').map( function(){    
-            return $(this).val();
-            }).get();
-
-            if (selectedUsers.length > 0 ){
-                let deleteModal = new bootstrap.Modal($('#deleteModal'), {});
-                deleteModal.show();
-            } else {
-                alert('No users selected');
-            }  
-        })
-
-        // Handle the delete confirmation action on modal
-        confirmdeleteBtn.on('click',()=>{
-            let selectedUsers = $('.user-checkbox:checked').map(function(){
-                return $(this).val();
-            }).get();
-            
-            console.log('Selected Users:', selectedUsers);  // Debugging: Log the selected user IDs
-
-            if(selectedUsers.length >0){
-                // Set the selected user IDs in the hidden input
-                $('#user-ids').val(selectedUsers.join(','));
-
-                console.log('User IDs to be deleted:', $('#user-ids').val());  // Debugging: Log the user_ids input value
-           
-                //AJAX request to delete users
-                $.ajax({
-                url:$('#delete-form').attr('action'),
-                type:'POST',
-                data: $('#delete-form').serialize(),
-                success: function(data){
-                    console.log(data);  // Log the server response to check if it is reaching here
-                    if(data.success){
-                        // Display success message from the server
-                        $('#ajax-message').html(`<div class= "alert alert-sucess">${data.message}</div>`);
-                        setTimeout(()=>{
-                            location.reload(); //Reload the page after loading the message
-                        },1500);    
-                    } else {
-                            //Display error messages from the server
-                            $('#ajax-message').html(`<div class="alert alert-danger">${data.message}</div>`);
-                    }
-                },
-                error: (xhr,status,error)=>{
-                    console.log(xhr.responseText);  // Log the response in case of an error
-                    $('#ajax-message').html('<div class="alert alert-danger">An unexpected error occurred.</div>');
-                }
-                });
-            } else {
-                alert('No users selected for deletion!');
-              }
         });
     });
 </script>
