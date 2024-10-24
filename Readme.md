@@ -52,11 +52,12 @@ project, i recommend delete all the migrations files, pycache or just the db.
 -Type *python manage.py createsuperuser*
 
 TODO:
-- Add picture to users profile
+-Add picture to users profile
 -Add consultations management on admin session
 -Hide add users button on user management
 -Add search filter bar and pagination to users management (Or use datatables instead)
 -*DONE* Change color of active field to red when user get deactivated 
 -*DONE* Add a mass removal for users management
+-Check mass removal action message not showing in UI
 -Add links to Common and Urgency services for authenticated and enrolled users only
 -Check Vital Signs validation when creating a new consultation by doctor
