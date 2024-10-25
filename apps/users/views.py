@@ -2,15 +2,13 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from django.urls import reverse
-
 from apps.consultations.models import PatientConsultation, VitalSigns
 from .forms import RegistrationForm,ProfileForm,CustomUserChangeForm
 from .models import CustomUser,Doctor, Patient
 from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
-import json
-from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
+
+
 
 
 """_Custom view for register a new user in system _"""
@@ -117,18 +115,62 @@ def profile_view(request):
 """Custom view for list users in system administration"""
 @login_required
 def list_users(request):
+    
+    # Get search query
+    search_query =  request.GET.get('search','')  
+    
+    # Fetch and sort users by username
     # Excluding superusers by filtering out users where is_superuser is True
-    users = CustomUser.objects.all().exclude(is_superuser=True) 
-    users_age=[]
+    users = CustomUser.objects.all().exclude(is_superuser=True)
+    
+    # Search users by username
+    if search_query:
+        users = users.filter(username__icontains=search_query)
+        print(f'{users}')
+        
+    # Filter by user type only if provided and not 'None'
+    user_type = request.GET.get('user_type')
+    if user_type and user_type!=None:
+        users = users.filter(user_type=user_type)
+        print(f'{users}')
+
+    # Define allowed sort fields
+    allowed_sort_fields = ['username', 'birthdate','date_joined']
+    # Get sorting parameters and validate
+    sort_by = request.GET.get('sort') or 'username'  # Default to 'username' if empty
+    order = request.GET.get('order') or 'asc'          # Default to ascending order if empty
+    
+    if sort_by not in allowed_sort_fields:
+        sort_by = 'username'  # Fallback to default if invalid
+    sort_field = f"-{sort_by}" if order=='desc' else sort_by
+    
+    # Apply sorting to users
+    users = users.order_by(sort_field)
     
     # Calculate and include age for all the users in system
-    for user in users:
-        age = user.get_age()
-        users_age.append({
-            'user':user,
-            'age':age
-        })
-    return render(request,'users/list_users.html',{'users':users_age})
+    users_age = [{'user': user,'age': user.get_age()} for user in users]
+    
+    # Pagination settings 
+    page = request.GET.get('page',1)
+    paginator = Paginator(users_age,4) # 4 users per page by now
+    
+    try:
+        paginated_users = paginator.page(page)
+    except PageNotAnInteger:
+        paginated_users = paginator.page(1)
+    except EmptyPage:
+        paginated_users = paginator.page(paginator.num_pages)
+        
+    # Add search query, filtering and order to the template context
+    context = {
+        'users':paginated_users,
+        'order':order,
+        'user_type':user_type,  
+        'search_query':search_query,
+        'sort_by':sort_by
+    }
+        
+    return render(request,'users/list_users.html',context)
 
 """Custom view for handle users edition in system administration"""
 @login_required

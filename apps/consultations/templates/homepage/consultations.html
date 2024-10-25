@@ -159,6 +159,7 @@
 <script>
     document.getElementById('consultations').classList.add('active');
 </script>
+{% if user.is_doctor %}
 <script>
     /*Incorporated the logic for handling required fields and disabling hidden fields.
     Avoided issue with the JavaScript validation of Django form when trying to submit a "common" consultation type*/
@@ -199,4 +200,6 @@
         consultationTypeField.dispatchEvent(new Event('change'));
     });
 </script>
+{% endif %}
+
 {% endblock %}

@@ -71,6 +71,13 @@
                         {% csrf_token %}
                         <button type="submit">Logout</button>
                     </form>
+                    <!--Relocate the script to avoid JS console issues with non authenticated users-->
+                    <script>
+                        //Submit logout form when closing session
+                        document.getElementById('logout-span').addEventListener('click', function() {
+                            document.getElementById('logout-form').submit();
+                        });
+                    </script>
                 {% endif %}
             
                 {% if not user.is_authenticated %}
@@ -98,10 +105,3 @@
         </div>
     </div>
 </nav>
-
-<script>
-    //Submit logout form when closing session
-    document.getElementById('logout-span').addEventListener('click', function() {
-        document.getElementById('logout-form').submit();
-    });
-</script>
