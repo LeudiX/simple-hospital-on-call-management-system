@@ -53,13 +53,14 @@ project, i recommend delete all the migrations files, pycache or just the db.
 
 ## TODO and solved tasks:
 -Add picture to users profile
+-Check Vital Signs validation when creating a new consultation by doctor
 -Add consultations management on admin session with sorting, pagination and filtering
+-Add Vital Signs management on admin session with sorting, pagination and filtering
 -*DONE*Add search filter bar and pagination to users management (Or use datatables instead)
 -*DONE* Change color of active field to red when user get deactivated 
 -*DONE* Add a mass removal for users management
 -*DONE*Check mass removal action message not showing in UI
 -*DONE*Add links to Common and Urgency services for authenticated and enrolled users only
--Check Vital Signs validation when creating a new consultation by doctor
 -*DONE*Solve issue when trying to submit a logout form already outside a session (JS issue)
 -*DONE* Relocated the script to avoid JS console issues with non authenticated users
 -*DONE* Added rol treatment to  avoid JS console issues when admin accessing consultations for management 
