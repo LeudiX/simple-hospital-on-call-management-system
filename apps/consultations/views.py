@@ -1,8 +1,8 @@
-import datetime
+
 from django.shortcuts import  redirect, render
 from django.contrib import messages
 from django.urls import reverse
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView,ListView
 from apps.consultations.models import Consultation
 from apps.users.models import CustomUser, Doctor, Patient
 from apps.consultations.models import PatientConsultation
@@ -144,7 +144,7 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
                     
             # If no duplicate is found, the code proceeds to save the consultation with the doctor as before
             consultation.doctor = doctor
-            consultation.status = 'in-progress'
+            consultation.status = 'completed'
             consultation.save()
             
             # Save the patient consultation
@@ -182,3 +182,17 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
         context['patient_consultation_form'] = patient_consultation_form
         
         return self.render_to_response(context)
+    
+class PatientConsultationListView(LoginRequiredMixin,ListView):
+    model = PatientConsultation
+    
+    # The context object name that will be used in the templates to query the consultations on system admin
+    context_object_name = 'patient_consultations'
+    template_name  = 'homepage/list_patient_consultations.html'
+    paginate_by = 3
+    
+    
+    
+    
+    
+

@@ -24,6 +24,13 @@
                         {% endif %}
                 </h5>    
             </div>
+        {% elif user.is_authenticated and user.is_superuser %}
+        <div class="d-flex px-5 mb-5">
+            <h5 class="text-success justify-content-start">
+                Admin Session
+                <hr> Email: <strong class="text-white"> {{user.email}}</strong>
+            </h5>
+        </div>
         {% endif %}
         <div class="px-5 text-white">
             

@@ -1,0 +1,119 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block navbar %}
+{% include 'homepage/magic-nav.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="row g-3 text-white">
+    <div class="container-xl">
+        <div class="table-responsive">
+            <div class="table-wrapper">
+                <div class="table-title">
+                    <div class="row">
+                        <div class="col-sm-7">
+                            <h2>Patient's Consultations <b>Management</b></h2>
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-1 justify-content-end">
+                            <a href="#" class="btn btn-success"><i class="fas fa-file-alt fa-lg fa-fw" data-toggle="tooltip" title="Export to Excel"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <table id="consultations-datatable" class="table text-white">
+                    <thead>
+                        <tr>
+                            <th>
+                                <!-- Checkbox parent -->
+                                <span class="custom-checkbox">
+                                    <input type="checkbox" id="selectAll">
+                                    <label for="selectAll"></label>
+                                </span>
+                            </th>
+                            <th>#</th>
+                            <th>Patient</th>
+                            <th>Address</th>
+                            <th>Attended by</th>
+                            <th>On</th>
+                            <th>Type</th>
+                            <th>Notes</th>
+                            <th>Status</th> 
+                            <th>Actions</th> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pc in patient_consultations %}
+                        <tr>
+                            <td> <!-- Checkbox childs -->
+                                <span class="custom-checkbox">
+                                    <input type="checkbox" class="user-checkbox" value="{{ pc.id }}">
+                                </span>
+                            </td>
+                            <td>{{pc.id}}</td>
+                            <td>{{pc.patient.user.get_full_name}}</td>
+                            <td>{{pc.patient.address}}</td>
+                            <td>{{pc.consultation.doctor.user.get_full_name}}</td>
+                            <td>{{pc.consultation.consultation_date}}</td>
+                            <td>{{pc.consultation_type.capitalize}}</td>
+                            <td>{{pc.consultation.notes}}</td>
+                            <td>{{pc.consultation.status}}</td>
+                            <td>
+                                <a class="details" data-bs-toggle="modal" data-bs-target="#detailsUserModal" ><i class="fas fa-eye fa-lg fa-fw text-warning" data-toggle="tooltip" title="Details"></i></a>
+                                <a class="delete" data-bs-toggle="modal" data-bs-target="#deleteUserModal" ><i class="fas fa-user-times fa-lg fa-fw text-danger" data-toggle="tooltip" title="Delete"></i></a>
+                            </td>
+                            {% empty %}
+                            <tr>
+                                <td colspan="12" class="text-center text-danger bg-warning"><strong>No consultations registered in system!!!</strong></td>
+                            </tr>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>      
+    </div>
+</div>
+
+<!--Pagination-->
+{% if is_paginated %}
+    <div class="text-center py-2">
+        {% if page_obj.has_previous %}
+            <a class="btn btn-outline-warning mb-4" href="?page=1">First</a>
+            <a  class="btn btn-outline-warning mb-4" href="?page = {{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.per_range %}
+            {% if page_obj.number == num %}
+                <a class="btn btn-warning mb-4" href="?page={{ num }}">{{ num }}</a>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a  class="btn btn-warning mb-4" href="?page= {{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+            
+        {% if page_obj.has_next %}
+            <a class="btn btn-outline-warning mb-4" href="?page= {{page_obj.next_page_number}}">Next</a>
+            <a class="btn btn-outline-warning mb-4" href="?page= {{page_obj.paginator.num_pages}}">Last</a>
+        {% endif %}
+    </div>
+{% else %}
+
+
+
+{% endif %}
+
+
+{% endblock %}
+
+{% block script %}
+<script>
+    /*Mass user removal behaviour*/
+    $(document).ready(function () {
+        // Activate tooltip
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+    document.getElementById('consultations').classList.add('active');
+</script>
+{% endblock %}

@@ -23,7 +23,7 @@
                 {% if user.is_authenticated %}
                     {% if user.is_doctor or user.is_patient %}
                         <li class="list" id="consultations">
-                            <a href="{% url 'consultations' %}"><!--Go to consultations URL-->
+                            <a href="{% url 'consultations' %}"><!--Go to personal consultations URL-->
                                 <span class="icon">
                                     <i class="fas fa-hand-holding-medical fa-lg fa-fw" aria-hidden="true"></i>
                                 </span>
@@ -40,7 +40,7 @@
                         </li>
                     {% elif user.is_superuser %}
                     <li class="list" id="consultations">
-                        <a href="{% url 'consultations' %}"><!--Go to Consultations Management URL-->
+                        <a href="{% url 'consultations_admin' %}"><!--Go to Consultations Management URL-->
                             <span class="icon">
                                 <i class="fas fa-hand-holding-medical fa-lg fa-fw" aria-hidden="true"></i>
                             </span>

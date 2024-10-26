@@ -1,9 +1,19 @@
 {% load static %}
-{% if  user.is_authenticated %}
+
 <div class="container text-right" id="header"> 
     <div id="welcome-message" class="welcomeM">
-        <h2>Welcome to Angelical Saviours</h2>
-        <p>We offer common consultations and urgency consultations to assist you in your needs</p>
+        {% if  user.is_authenticated and user.is_patient %}
+        <h2>Welcome to Angelical Saviours 😊</h2>
+        <p>We offer common consultations and urgency consultations to assist you in your needs 🥰</p>
+        {% elif user.is_authenticated and user.is_doctor %}
+        <h2>Welcome to Angelical Saviours Doctor: {{user.username.capitalize}} 😊</h2>
+        <p>Check your latest consultations or your profile to stay up to date 😷</p>
+        {% elif user.is_authenticated and user.is_superuser %}
+        <h2>Welcome to Angelical Saviours Admin 😊</h2>
+        <p>Remember to manage the system wisely!!✌️</p>
+        {% else %}
+        <h2>Welcome to Angelical Saviours🙏</h2>
+        {% endif %}
      </div>
      <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -17,7 +27,6 @@
         });
     </script>
 </div>
-{% endif %}
 <!--Custom styles for welcome message-->
 <style>
     .welcomeM {
