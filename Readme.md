@@ -53,6 +53,7 @@ project, i recommend delete all the migrations files, pycache or just the db.
 
 ## TODO and solved tasks:
 -Add picture to users profile
+-Add service stats on main page (Number of doctors, patients attended, doctors team ) 
 -Check Vital Signs validation when creating a new consultation by doctor
 -*WORKING*Add consultations management on admin session with sorting, pagination and filtering
 -Add Vital Signs management on admin session with sorting, pagination and filtering
