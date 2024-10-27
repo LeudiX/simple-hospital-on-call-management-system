@@ -189,9 +189,22 @@ class PatientConsultationListView(LoginRequiredMixin,ListView):
     # The context object name that will be used in the templates to query the consultations on system admin
     context_object_name = 'patient_consultations'
     template_name  = 'homepage/list_patient_consultations.html'
-    paginate_by = 3
+    paginate_by = 4
     
+    # Query the consultations by consultation type
+    def get_queryset(self):   
+        consultation_type= self.request.GET.get('consultation_type')
+        print(f'{consultation_type}') # Debugging purposes only
+        if consultation_type:
+           return PatientConsultation.objects.filter(consultation_type=consultation_type) # Return only the consultations of the specified type
+        return super().get_queryset().order_by('consultation__consultation_date')   # Return all the consultations ordered by date
     
+    # Get the context data and add the consultation_type to it
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)     
+        context['consultation_type'] = self.request.GET.get('consultation_type', '') # Add consultation_type to the context
+        return context
+
     
     
     

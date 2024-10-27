@@ -16,7 +16,15 @@
                             <h2>Patient's Consultations <b>Management</b></h2>
                         </div>
                         <div class="col-sm-2"></div>
-                        <div class="col-sm-2"></div>
+                        <div class="col-sm-2">
+                            <form method="get" action="">
+                                <select name="consultation_type" onchange="this.form.submit()">
+                                    <option value="">All Consultations</option>
+                                    <option value="common" {% if consultation_type == 'common' %}selected{% endif %}>Common</option>
+                                    <option value="urgency" {% if consultation_type == 'urgency' %}selected{% endif %}>Urgency</option>
+                                </select>
+                            </form>
+                        </div>
                         <div class="col-sm-1 justify-content-end">
                             <a href="#" class="btn btn-success"><i class="fas fa-file-alt fa-lg fa-fw" data-toggle="tooltip" title="Export to Excel"></i></a>
                         </div>
