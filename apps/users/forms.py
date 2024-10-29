@@ -7,17 +7,21 @@ from django.core.validators import MinValueValidator,MaxValueValidator
 """User's registry form"""
 class RegistrationForm(UserCreationForm):
     
-    email = forms.EmailField(required=True,widget=forms.EmailInput(attrs={'class':'form-control'}))
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'off'})
+    )
+    
+    email = forms.EmailField(required=True,widget=forms.EmailInput(attrs={'class':'form-control', 'autocomplete': 'off'}))
     
     password1 = forms.CharField(
         label='Password',
-        widget=forms.PasswordInput(attrs={'class':'form-control','id':'password-input'}),
+        widget=forms.PasswordInput(attrs={'class':'form-control','id':'password-input','autocomplete':'new-password'}),
         help_text=password_validation.password_validators_help_text_html(),
     )
     
     password2 = forms.CharField(
         label="Confirm Password",
-        widget=forms.PasswordInput(attrs={'class':'form-control'}),
+        widget=forms.PasswordInput(attrs={'class':'form-control', 'autocomplete':'new-password'}),
     )
     
     #Adding and addditional field for password strength checking
@@ -29,7 +33,7 @@ class RegistrationForm(UserCreationForm):
     birthdate = forms.DateField(
         required=True,
         label='Birthdate',
-        widget=forms.DateInput(attrs={'class':'datepicker','type':'date'}),
+        widget=forms.DateInput(attrs={'class':'datepicker','type':'date', 'autocomplete':'off'}),
         )
 
     #user_type = forms.ChoiceField(choices=[('','Choose user role')]+list(CustomUser.USER_TYPE_CHOICES),required=True)    
