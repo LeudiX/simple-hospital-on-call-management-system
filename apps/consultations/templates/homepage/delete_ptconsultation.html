@@ -6,7 +6,7 @@
         {% csrf_token %}
         <input type="hidden" name="pt_consultation_id" value="{{ pt_consultation.id }}">
         {% if pt_consultation %}
-            <p>Consultation ID: {{ pt_consultation.id }}</p>
+            <p class="text-danger fw-bold">Consultation ID: {{ pt_consultation.id }}</p>
         {% else %}
             <p>Error: Consultation object not found.</p>
         {% endif %}
@@ -14,7 +14,6 @@
             <p class="text-white"> 
                 <i class="fa fa-exclamation-triangle fa-lg fa-fw text-warning"></i>
                 Are you sure you want to delete this consultation
-                <strong class="text-danger">{{ pt_consultation.id }}</strong>
                 🤔?
             </p>
         </div>

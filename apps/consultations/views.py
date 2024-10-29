@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView,ListView
 from django.core.paginator import Paginator
-from apps.consultations.models import Consultation, PatientConsultation
+from apps.consultations.models import Consultation, PatientConsultation, UrgencyConsultation, CommonConsultation, VitalSigns
 from apps.users.models import CustomUser, Doctor, Patient
 from .forms import CommonConsultationForm, ConsultationForm, PatientConsultationForm, UrgencyConsultationForm, VitalSignsForm
 from datetime import timedelta
@@ -212,9 +212,19 @@ class PatientConsultationListView(LoginRequiredMixin,ListView):
 def details_ptconsultation(request,id):
     
     pt_consultation = PatientConsultation.objects.get(id=id) #Ensure the consultation exists
+    urgency_consultation = UrgencyConsultation.objects.filter(consultation=pt_consultation.consultation).first() # Ensure the urgency consultation exists if pt_consultion type is urgency
+    common_consultation = CommonConsultation.objects.filter(consultation=pt_consultation.consultation).first()  # Ensure the common consultation exists if pt_consultion type is common
     
+    if pt_consultation.consultation_type == 'urgency' and urgency_consultation:
+        print(f'urgency_consultation: {urgency_consultation.main_symptom}')
+    elif pt_consultation.consultation_type == 'common' and  common_consultation:
+        print(f'common_consultation: {common_consultation.diagnosis}')
+        
+    # Get the context data and add the consultation_type to it
     context = {
         'pt_consultation': pt_consultation,
+        'urgency_consultation':urgency_consultation if pt_consultation.consultation_type == 'urgency'and urgency_consultation else None,
+        'common_consultation':common_consultation if pt_consultation.consultation_type == 'common' and common_consultation else None,
     }
     return render(request, 'homepage/details_ptconsultation.html', context)
 

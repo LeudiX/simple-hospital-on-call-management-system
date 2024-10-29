@@ -24,6 +24,35 @@
             <label for="type">Type</label>
             <input type="text" class="form-control" id="type" value="{{ pt_consultation.consultation_type.capitalize }}" disabled>
         </div>
+        {% if urgency_consultation %}
+        <!--Dynamic injection of data into pt_consultations details for a urgency type consultation-->
+        <div class="form-group text-white py-1" name="symptom">
+            <label for="symptom">Main Symptom</label>
+            <input type="text" class="form-control" id="symptom" value="{{ urgency_consultation.main_symptom }}" disabled>
+        </div>
+        <div class="form-group text-white py-1" name="admitted">
+            <label for="admitted">Admitted</label>
+            {% if not urgency_consultation.admitted %}
+            <input type="text" class="form-control" id="admitted" value="No" disabled>
+            {% else %}
+            <input type="text" class="form-control" id="admitted" value="Yes" disabled>
+            {% endif %}
+        </div>
+        {% elif common_consultation %}
+        <!--Dynamic injection of data into pt_consultations details for a common type consultation-->
+        <div class="form-group text-white py-1" name="diagnosis">
+            <label for="diagnosis">Diagnosis</label>
+            <input type="text" class="form-control" id="diagnosis" value="{{ common_consultation.diagnosis }}" disabled>
+        </div>
+        <div class="form-group text-white py-1" name="test_applied">
+            <label for="test_applied">Test applied</label>
+            {% if not common_consultation.test_applied %}
+            <input type="text" class="form-control" id="test_applied" value="No" disabled>
+            {% else %}
+            <input type="text" class="form-control" id="test_applied" value="Yes" disabled>
+            {% endif %}
+        </div>
+        {% endif %}
         <div class="form-group text-white py-1" name="notes">
             <label for="notes">Notes</label>
             <textarea name="notes" class="form-control" id="notes" rows="2" disabled>{{ pt_consultation.consultation.notes }}</textarea>

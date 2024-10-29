@@ -66,3 +66,4 @@ project, i recommend delete all the migrations files, pycache or just the db.
 -*DONE*Solve issue when trying to submit a logout form already outside a session (JS issue)
 -*DONE* Relocated the script to avoid JS console issues with non authenticated users
 -*DONE* Added rol treatment to  avoid JS console issues when admin accessing consultations for management
+-*DONE*Prevented the browser from autofilling username and password fields in user registration form
