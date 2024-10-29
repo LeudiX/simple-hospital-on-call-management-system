@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
     <!--Custom modal form with crispy_forms_tags for user management-->
     <div class="modal-body" id="userDetails">
-        <form id="userForm" action="{% url 'edit_user' user.id %}" method="post">
+        <form id="userForm" action="{% url 'edit_user' user.id %}" method="post" autocomplete="off">
             {% csrf_token %}
             <input type="hidden" name="user_id" value="{{ user.id }}">
             {{ form|crispy }}

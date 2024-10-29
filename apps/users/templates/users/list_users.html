@@ -204,7 +204,7 @@
     /*Used for load user details inside modal*/
     function loadUserDetails(userId) {
         $.ajax({
-            url: '/users/'+ userId +'/edit/'  ,
+            url: '/users/'+ userId +'/edit/',
             type: 'GET',
             success: function(data) {
                 $('#userDetails').html(data);  // Insert user details into editUserModal
@@ -218,7 +218,7 @@
     // Function to load user delete confirmation into the modal
     function loadDeleteUserConfirm(userId) {
         $.ajax({
-            url: '/users/' + userId + '/delete/',
+            url: '/users/'+ userId +'/delete/',
             type: 'GET',
             success: function(data) {
                 $('#deleteUserConfirm').html(data);  // Insert the confirmation message into deleteUserModal
@@ -264,7 +264,6 @@
 
         const selectAllCheckBox = $("#selectAll");
         const deleteBtn = $('#delete-button');
-        const confirmdeleteBtn = $('#confirm-delete');
         let checkbox_childs = $('.user-checkbox');
 
         // Function to toggle delete button visibility

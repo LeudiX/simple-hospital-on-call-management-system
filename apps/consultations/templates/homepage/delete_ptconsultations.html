@@ -1,0 +1,25 @@
+{% load static %}
+<!--Custom modal form for multiple patient consultations removal-->
+<div class="modal-body" id="deleteMultiplePCConfirm">
+        <form id="deleteMCForm" action="{% url 'delete_consultations' %}" method="post">
+            {% csrf_token %}
+            <!-- Hidden input to store the selected consultations IDs separated by comma -->
+             <input type="hidden" name="pc_ids" value="{{pc_ids}}">
+                <p class="text-white">
+                    <i class="fa fa-exclamation-triangle fa-lg fa-fw text-warning"></i>
+                    Are you sure you want to delete the following consultations🤔? 
+                </p>
+                <div class="text-warning">
+                    <ul>                    
+                        {% for pc in pt_consultations %}
+                            <li>User: <span class="text-danger">{{ pc.patient.user.username }}</span> on: <span class="text-danger">{{ pc.consultation.consultation_date }}</span></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+            <div class="modal-footer">
+                <input type="button" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancel">
+                <input type="submit" class="btn btn-danger"  value="Delete">
+            </div>
+        </form>
+</div>

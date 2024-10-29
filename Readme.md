@@ -57,7 +57,7 @@ project, i recommend delete all the migrations files, pycache or just the db.
 -Check Vital Signs validation when creating a new consultation by doctor
 -*WORKING*Add consultations management on admin session with sorting, pagination and filtering
 -Add Vital Signs management on admin session with sorting, pagination and filtering
--Improve visual quality of consultations and vital signs management 
+-Improve UI of consultations and vital signs management 
 -*DONE*Add search filter bar and pagination to users management (Or use datatables instead)
 -*DONE* Change color of active field to red when user get deactivated 
 -*DONE* Add a mass removal for users management

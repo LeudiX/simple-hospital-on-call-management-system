@@ -1,0 +1,41 @@
+{% load static %}
+
+<!--Custom modal for patient consultation details management-->
+<div class="modal-body" id="pcDetails">
+        <input type="hidden" name="pt_consultation" value="{{ pt_consultation.id }}">
+        {% if pt_consultation %}
+        <div class="form-group text-white py-1" name="patient">
+            <label for="patient">Patient</label>
+            <input type="text" class="form-control" id="patient" value="{{ pt_consultation.patient.user.get_full_name }}" disabled>
+        </div>
+        <div class="form-group text-white py-1" name="address">
+            <label for="address">Address</label>
+            <input type="text" class="form-control" id="address" value="{{ pt_consultation.patient.address }}" disabled autocomplete="off">
+        </div>
+        <div class="form-group text-white py-1" name="doctor">
+            <label for="doctor">Attended by</label>
+            <input type="text" class="form-control" id="doctor" value="{{ pt_consultation.consultation.doctor.user.get_full_name }}" disabled>
+        </div>
+        <div class="form-group text-white py-1" name="date">
+            <label for="date">Date</label>
+            <input type="text" class="form-control" id="date" value="{{ pt_consultation.consultation.consultation_date }}" disabled>
+        </div>
+        <div class="form-group text-white py-1" name="type">
+            <label for="type">Type</label>
+            <input type="text" class="form-control" id="type" value="{{ pt_consultation.consultation_type.capitalize }}" disabled>
+        </div>
+        <div class="form-group text-white py-1" name="notes">
+            <label for="notes">Notes</label>
+            <textarea name="notes" class="form-control" id="notes" rows="2" disabled>{{ pt_consultation.consultation.notes }}</textarea>
+        </div>
+        {% else %}
+            <tr>
+                <td colspan="4" class="text-center text-danger bg-warning"><strong>An error has happened during the loading this consultation😱!</strong></td>
+            </tr>
+        {% endif %}
+
+        <div class="modal-footer">
+            <input type="button" class="btn btn-secondary" data-bs-dismiss="modal" value="Close">
+            <input type="submit" class="btn btn-success"  value="Export to PDF">
+        </div>
+</div>

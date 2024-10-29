@@ -12,7 +12,7 @@
             <div class="table-wrapper">
                 <div class="table-title">
                     <div class="row">
-                        <div class="col-sm-7">
+                        <div class="col-sm-6">
                             <h2>Patient's Consultations <b>Management</b></h2>
                         </div>
                         <div class="col-sm-2"></div>
@@ -25,7 +25,11 @@
                                 </select>
                             </form>
                         </div>
-                        <div class="col-sm-1 justify-content-end">
+                        <div class="col-sm-2 justify-content-end">
+                            <!-- Button for mass patient consultations delete, initially hidden -->
+                            <button id="delete-button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteMultiplePCModal" onclick="loadDeleteMultiplePCConfirm()"  style="display: none;">
+                                <i class="fas fa-user-times fa-lg fa-fw" data-toggle="tooltip" title="Delete Selected Consultations"></i>
+                            </button>
                             <a href="#" class="btn btn-success"><i class="fas fa-file-alt fa-lg fa-fw" data-toggle="tooltip" title="Export to Excel"></i></a>
                         </div>
                     </div>
@@ -56,7 +60,7 @@
                         <tr>
                             <td> <!-- Checkbox childs -->
                                 <span class="custom-checkbox">
-                                    <input type="checkbox" class="user-checkbox" value="{{ pc.id }}">
+                                    <input type="checkbox" class="pc-checkbox" value="{{ pc.id }}">
                                 </span>
                             </td>
                             <td>{{pc.id}}</td>
@@ -68,8 +72,8 @@
                             <td>{{pc.consultation.notes}}</td>
                             <td>{{pc.consultation.status}}</td>
                             <td>
-                                <a class="details" data-bs-toggle="modal" data-bs-target="#detailsUserModal" ><i class="fas fa-eye fa-lg fa-fw text-warning" data-toggle="tooltip" title="Details"></i></a>
-                                <a class="delete" data-bs-toggle="modal" data-bs-target="#deleteUserModal" ><i class="fas fa-user-times fa-lg fa-fw text-danger" data-toggle="tooltip" title="Delete"></i></a>
+                                <a class="details" data-bs-toggle="modal" data-bs-target="#detailsPCModal" onclick="loadPCDetails('{{pc.id}}')"><i class="fas fa-eye fa-lg fa-fw text-info" data-toggle="tooltip" title="Details"></i></a>
+                                <a class="delete"  data-bs-toggle="modal" data-bs-target="#deletePCModal" onclick="loadDeletePCConfirm('{{pc.id}}')"><i class="fas fa-user-times fa-lg fa-fw text-danger" data-toggle="tooltip" title="Delete"></i></a>
                             </td>
                             {% empty %}
                             <tr>
@@ -105,23 +109,145 @@
             <a class="btn btn-outline-warning mb-4" href="?page= {{page_obj.paginator.num_pages}}">Last</a>
         {% endif %}
     </div>
-{% else %}
-
-
-
 {% endif %}
 
+ <!-- Details Patient Consultations Modal HTML -->
+ <div id="detailsPCModal" class="modal fade" tabindex="-1" aria-labelledby="detailsPCModal">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h4 class="modal-title text-success">Consultation Details</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            {% block detailsPCModal %}
+            {% include 'homepage/details_ptconsultation.html' %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
 
-{% endblock %}
+<!-- Delete Patient Consultation Modal confirmation HTML -->
+<div id="deletePCModal" class="modal fade" tabindex="-1" aria-labelledby="deletePCModal">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h4 class="modal-title text-warning">Confirm Consultation removal</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            {% block deletePCModal %}
+            {% include 'homepage/delete_ptconsultation.html' %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+
+<!--Massive Patient Consultation removal Modal confirmation HTML -->
+<div class="modal fade" id="deleteMultiplePCModal" tabindex="-1" aria-labelledby="deleteMPCModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+    <div class="modal-content bg-dark">
+        <div class="modal-header">
+            <h4 class="modal-title text-warning" id="deleteMPCModalLabel">Confirm Consultations Mass Removal</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        {% block deleteMultiplePCModal %}
+        {% include 'homepage/delete_ptconsultations.html' %}
+        {% endblock %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
 
 {% block script %}
+<script>
+    /*Used for load patient consultation details inside modal*/
+    function loadPCDetails(pt_consultationId) {
+        $.ajax({
+            url: '/consultations/admin/'+ pt_consultationId +'/details/',
+            type: 'GET',
+            success: function(data) {
+                $('#pcDetails').html(data);  // Insert user details into editUserModal
+            },
+            error: function() {
+                alert('Error loading user details');
+            }
+        });
+    }
+
+    // Function to load user delete confirmation into the modal
+    function loadDeletePCConfirm(pt_consultationId) {
+        if (!pt_consultationId) {
+            console.error("Error: Consultation ID is missing.");
+            return;
+        }
+        $.ajax({
+            url: '/consultations/admin/' + pt_consultationId + '/delete/',
+            type: 'GET',
+            success: function(data) {
+                //console.log(data);  // Debugging line
+                $('#deletePCConfirm').html(data);  // Insert the confirmation message into deletePCModal
+            },
+            error: function() {
+                alert('Error loading delete confirmation');
+            }
+        });
+    }
+
+    // Function to gather selected consultations IDs and load confirmation modal
+    function loadDeleteMultiplePCConfirm(){
+        let selectedPCIDs = [];
+        // Gather chequed checkboxes with class 'pc-checkbox' for selecting users
+        $('input.pc-checkbox:checked').each(function(){
+            selectedPCIDs.push($(this).val());
+        })
+
+        if(selectedPCIDs.length>0){
+            $.ajax({
+                url:'/consultations/admin/delete-consultations/confirm',  // URL for the confirmation view
+                type: 'GET',
+                data:{pc_ids:selectedPCIDs.join(',')},  // Send selected user IDs
+                success: function(data){
+                    $('#deleteMultiplePCConfirm').html(data)  // Insert confirmation message into the modal
+                },
+                error: function(){
+                    alert('Error loading delete confirmation.');
+                }
+            });
+        } else {
+            alert('Please, select at least one consultation to delete.')
+        }
+    }
+</script>
 <script>
     /*Mass user removal behaviour*/
     $(document).ready(function () {
         // Activate tooltip
         $('[data-toggle="tooltip"]').tooltip();
+
+        const selectAllCheckBox = $("#selectAll");
+        const deleteBtn = $('#delete-button');
+        let checkbox_childs = $('.pc-checkbox');
+
+        // Function to toggle delete button visibility
+        $.fn.toggleDeleteButton = function(){
+            let checkedCount = $('.pc-checkbox:checked').length;
+            deleteBtn.toggle(checkedCount>0)
+        }
+
+        // Select/Deselect child checkboxes inside the table
+        selectAllCheckBox.click(function () {
+           checkbox_childs.prop('checked', this.checked);
+           $.fn.toggleDeleteButton();
+        });
+
+        // If one of the child checkboxes get deselected, deselect the parent as well 
+        checkbox_childs.change(function () {
+            if(!this.checked)
+                selectAllCheckBox.prop('checked',false);
+            $.fn.toggleDeleteButton();
+        });
     });
 
     document.getElementById('consultations').classList.add('active');
 </script>
-{% endblock %}
+{% endblock script %}

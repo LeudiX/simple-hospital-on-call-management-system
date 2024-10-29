@@ -1,11 +1,13 @@
 
 from django.shortcuts import  redirect, render
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
+from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView,ListView
-from apps.consultations.models import Consultation
+from django.core.paginator import Paginator
+from apps.consultations.models import Consultation, PatientConsultation
 from apps.users.models import CustomUser, Doctor, Patient
-from apps.consultations.models import PatientConsultation
 from .forms import CommonConsultationForm, ConsultationForm, PatientConsultationForm, UrgencyConsultationForm, VitalSignsForm
 from datetime import timedelta
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -14,7 +16,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 # Consultations views.
 class home_page(TemplateView):
     template_name = 'homepage/home.html'
-
 
 class CreateConsultationView(LoginRequiredMixin,TemplateView):
     template_name = 'homepage/consultations.html'  # Consultations current template
@@ -182,7 +183,8 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
         context['patient_consultation_form'] = patient_consultation_form
         
         return self.render_to_response(context)
-    
+
+
 class PatientConsultationListView(LoginRequiredMixin,ListView):
     model = PatientConsultation
     
@@ -204,6 +206,64 @@ class PatientConsultationListView(LoginRequiredMixin,ListView):
         context = super().get_context_data(**kwargs)     
         context['consultation_type'] = self.request.GET.get('consultation_type', '') # Add consultation_type to the context
         return context
+
+"""Custom view for handle patient consultation details in system administration"""
+@login_required
+def details_ptconsultation(request,id):
+    
+    pt_consultation = PatientConsultation.objects.get(id=id) #Ensure the consultation exists
+    
+    context = {
+        'pt_consultation': pt_consultation,
+    }
+    return render(request, 'homepage/details_ptconsultation.html', context)
+
+"""Custom view for handle user removal in system administration"""
+@login_required
+def delete_ptconsultation(request,id):
+    print(f"Attempting to delete consultation with ID: {id}")
+    pt_consultation = get_object_or_404(PatientConsultation, id=id) #Ensure the consultation exists
+    print(f'{pt_consultation.patient.user.username}')
+    if request.method =='POST':
+        pt_consultation.delete()
+        messages.success(request,f'Consultation for {pt_consultation.patient.user.username} removed successfully 😊')
+        return redirect('consultations_admin') # Redirect after successful deletion
+    
+    return render(request, 'homepage/delete_ptconsultation.html', {'pt_consultation': pt_consultation}) # Render a confirmation prompt to be loaded into the modal via AJAX
+
+"""Custom view for handle patient consultations mass removal in system administration"""
+@login_required
+def delete_ptconsultations(request):
+    if request.method == 'GET':
+        pc_ids = request.GET.get('pc_ids')
+        if pc_ids:
+            pc_ids_list = pc_ids.split(',')
+            pc_to_delete = PatientConsultation.objects.filter(id__in=pc_ids_list)
+            pc_ids = ','.join(str(pc.id) for pc in pc_to_delete) #Creating a string of comma-separated user IDs
+            return render(request, 'homepage/delete_ptconsultations.html', {'pt_consultations': pc_to_delete, 'pc_ids': pc_ids})
+        messages.warning(request,'No Consultations IDs provided!😬')
+        return redirect('consultations_admin') # Redirect to the consultations admin list page
+
+    elif request.method == 'POST':
+        pc_ids = request.POST.get('pc_ids')  # Fetch the pc_ids from the request
+        
+        if pc_ids:
+            pc_ids_list = pc_ids.split(',')  # Split the string to get the list of IDs
+            print(f'{pc_ids_list}') # Debugging purposes only
+            try:
+                # Convert pc IDs to integers and perform deletion
+                pc_to_delete = PatientConsultation.objects.filter(id__in=pc_ids_list)
+                deleted_count, _= pc_to_delete.delete()
+                messages.success(request,f'{deleted_count} consultations deleted successfully😊')
+                return redirect('consultations_admin') # Redirect back to consultations admin page on sucess
+            except Exception as e:
+                messages.warning(request,f'Error:{str(e)}🤔')
+                return redirect('consultations_admin') # Redirect back to consultations admin page on error
+        else:
+            messages.warning(request,'No consultations IDs provided!😬')
+            return redirect('consultations_admin')    # Redirect back to consultations admin page on error
+    messages.warning(request,'Invalid request method!😬')
+    return redirect('consultations_admin') # Redirect back to consultations admin page on error
 
     
     

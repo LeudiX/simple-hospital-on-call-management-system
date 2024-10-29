@@ -1,21 +1,20 @@
 {% load static %}
 <!--Custom modal form for user removal-->
 <div class="modal-body" id="deleteUserConfirm">
-        <form id="deleteUserForm" action="{% url 'delete_user' user.id %}" method="post">
+    <form id="deleteUserForm" action="{% url 'delete_user' user.id %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="user_id" value="{{ user.id }}">
             <div class ="d-flex justify-content-center">
-                <p> 
+                <p class="text-white"> 
                     <i class="fa fa-exclamation-triangle fa-lg fa-fw text-warning"></i>
                     Are you sure you want to delete user
                     <strong class="text-danger">{{ user.username }}</strong>
                     🤔?
                 </p>
-            </div>
-            
+            </div>   
             <div class="modal-footer">
                 <input type="button" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancel">
                 <input type="submit" class="btn btn-danger"  value="Delete">
             </div>
-        </form>
+    </form>
 </div>

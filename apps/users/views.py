@@ -237,7 +237,7 @@ def delete_users(request):
         else:
             messages.warning(request,'No users IDs provided!😬')
             return redirect('users')    # Redirect back to users page on error
-    messages.error(request,'Invalid request method!😬')
+    messages.warning(request,'Invalid request method!😬')
     return redirect('users') # Redirect back to users page on error
     
    
