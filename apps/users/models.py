@@ -2,6 +2,7 @@ import datetime
 from django.db import models
 from django.core.validators import MinValueValidator,MaxValueValidator
 from django.contrib.auth.models import AbstractUser,BaseUserManager
+from .utils import resize_profile_image
 
 # Course Notes
 """
@@ -93,6 +94,12 @@ class CustomUser(AbstractUser):
     
     birthdate = models.DateField(verbose_name='birthdate',help_text='Select your birth date',null=True,blank=True)
     gender = models.CharField(verbose_name='gender',max_length=20, choices=GENDER_CHOICES, help_text='Select your gender')
+    
+    # New profile picture field
+    profile_picture = models.ImageField(upload_to='profile_pics/%Y/%m/%d/', # New images will go into media/profile_pics
+                                        blank=True, 
+                                        null=True,
+                                        help_text='Upload a profile picture')
      
     """_Role based authorization purposes_
     """
@@ -105,6 +112,20 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return f"Name: {self.first_name} {self.last_name} ({self.user_type})"
     
+    # Optional: remove old profile picture files when updating a user
+    def save(self,*args,**kwargs):
+        if self.pk: # Check if the user already exists in the database
+            old_profile_picture = CustomUser.objects.get(pk=self.pk).profile_picture # Get the old profile picture from user
+            # Check if the profile picture has been changed and is not the default profile picture
+            if old_profile_picture and old_profile_picture != self.profile_picture and old_profile_picture.name != "default_profile_picture2.png":
+                old_profile_picture.delete(save=False)  # Avoid deleting the default image
+        
+        # Resize the image if it exists and is not the default picture
+        if self.profile_picture and self.profile_picture.name != "default_profile_picture2.png":
+            self.profile_picture= resize_profile_image(self.profile_picture)
+        
+        super().save(*args,**kwargs) # Save the user
+     
     """Calculate the age of the user in years."""
     def get_age(self):
         age=datetime.date.today()-self.birthdate 

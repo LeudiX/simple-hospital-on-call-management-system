@@ -8,9 +8,6 @@ from .models import CustomUser,Doctor, Patient
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 
-
-
-
 """_Custom view for register a new user in system _"""
 def register(request):
     if request.method == 'POST':
@@ -48,13 +45,17 @@ def profile_view(request):
     age = User.objects.get(pk=request.user.pk).get_age() # Fetching AGE from CustomUser model 
     
     # Get the current doctor from the request (assuming you have access to it)
+    doctor_profile = None
     if user.user_type == 'doctor':
         try:
             doctor_profile = Doctor.objects.get(user=user)
-            initial_data['specialty'] = doctor_profile.specialty
-            initial_data['experience'] = doctor_profile.experience
+            initial_data.update({
+                'specialty': doctor_profile.specialty,
+                'experience': doctor_profile.experience,
+                'profile_picture': doctor_profile.user.profile_picture,
+            })
         except Doctor.DoesNotExist:
-            doctor_profile = None
+            pass  # No need to handle if the profile doesn't exist
     elif user.user_type == 'patient':
         try:
             # Get the current patient from the request (assuming you have access to it)
@@ -76,9 +77,9 @@ def profile_view(request):
             last_consultation = None
             last_vital_signs = None
     
+    # Handle POST submission with image
     if request.method == 'POST':
-       
-        form = ProfileForm(request.POST, instance=user, user=user,initial=initial_data)
+        form = ProfileForm(request.POST,request.FILES, instance=user, user=user,initial=initial_data)
         
         if form.is_valid():
             form.save()
@@ -86,7 +87,13 @@ def profile_view(request):
                 doctor_profile, created = Doctor.objects.get_or_create(user=user)
                 doctor_profile.specialty = form.cleaned_data['specialty']
                 doctor_profile.experience = form.cleaned_data['experience']
-                doctor_profile.save()
+                
+                 # Save profile picture to CustomUser
+                if 'profile_picture' in form.cleaned_data and form.cleaned_data['profile_picture']:
+                    user.profile_picture = form.cleaned_data['profile_picture']
+                    print(f'{user.profile_picture.url}')
+                user.save() # Save the user instance to update the profile_picture field
+                doctor_profile.save() # Save the doctor profile instance
                 messages.success(request,f'Doctor {doctor_profile.user.get_full_name()} profile successfully updated in registry!😊')
             elif user.user_type == 'patient':
                 patient_profile, created = Patient.objects.get_or_create(user=user)

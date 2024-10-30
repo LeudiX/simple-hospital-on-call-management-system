@@ -52,10 +52,12 @@ project, i recommend delete all the migrations files, pycache or just the db.
 -Type *python manage.py createsuperuser*
 
 ## TODO and solved tasks:
--Add picture to users profile
+-*DONE*Add picture to users profile
 -Add service stats on main page (Number of doctors, patients attended, doctors team ) 
 -Check Vital Signs validation when creating a new consultation by doctor
+-Add profile access to admin on system management
 -*WORKING*Add consultations management on admin session with sorting, pagination and filtering
+-Consider implementing a more robust file management strategy, like checking file types and sizes, to ensure that application handles image uploads securely and efficiently
 -Add Vital Signs management on admin session with sorting, pagination and filtering
 -Improve UI of consultations and vital signs management 
 -*DONE*Add search filter bar and pagination to users management (Or use datatables instead)
@@ -67,3 +69,26 @@ project, i recommend delete all the migrations files, pycache or just the db.
 -*DONE* Relocated the script to avoid JS console issues with non authenticated users
 -*DONE* Added rol treatment to  avoid JS console issues when admin accessing consultations for management
 -*DONE*Prevented the browser from autofilling username and password fields in user registration form
+-*DONE* Added dynamic injection of data into pt_consultations modal details for urgency and common type consultations
+
+### Solved issue with profile_picture field CustomUser model related also with media files default url in database
+
+- Go to console and type *py manage.py shell*
+-For this especific cased i have to remove this field, so i write in console the following:
+
+`from apps.users.models import CustomUser  # Adjusted the path to CustomUser model 
+
+# Filter users with profile_picture set to the default image path
+users_with_default_image = CustomUser.objects.filter(profile_picture='profile_pics/default_profile_picture2.png')
+
+# Set profile_picture to None for each user with the default image
+for user in users_with_default_image:
+    user.profile_picture = None
+    user.save()
+
+print(f"Updated {users_with_default_image.count()} users to use the static default profile picture.")
+`
+-Then type *Enter* and write `exit()` in shell
+-Make migrations in users 
+-Migrate
+-Run again

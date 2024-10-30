@@ -184,7 +184,6 @@ class CreateConsultationView(LoginRequiredMixin,TemplateView):
         
         return self.render_to_response(context)
 
-
 class PatientConsultationListView(LoginRequiredMixin,ListView):
     model = PatientConsultation
     
@@ -212,8 +211,8 @@ class PatientConsultationListView(LoginRequiredMixin,ListView):
 def details_ptconsultation(request,id):
     
     pt_consultation = PatientConsultation.objects.get(id=id) #Ensure the consultation exists
-    urgency_consultation = UrgencyConsultation.objects.filter(consultation=pt_consultation.consultation).first() # Ensure the urgency consultation exists if pt_consultion type is urgency
-    common_consultation = CommonConsultation.objects.filter(consultation=pt_consultation.consultation).first()  # Ensure the common consultation exists if pt_consultion type is common
+    urgency_consultation = UrgencyConsultation.objects.select_related('consultation').filter(consultation=pt_consultation.consultation).first() # Ensure the urgency consultation exists if pt_consultion type is urgency
+    common_consultation = CommonConsultation.objects.select_related('consultation').filter(consultation=pt_consultation.consultation).first()  # Ensure the common consultation exists if pt_consultion type is common
     
     if pt_consultation.consultation_type == 'urgency' and urgency_consultation:
         print(f'urgency_consultation: {urgency_consultation.main_symptom}')

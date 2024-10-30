@@ -51,14 +51,20 @@ class CustomUserChangeForm(forms.ModelForm):
         model = CustomUser
         fields = ('username','email','user_type','is_active') 
 
-"User's personal profile form"
+"""User personal profile form"""
 class ProfileForm(forms.ModelForm):
     
     gender = forms.ChoiceField(choices=[('','Choose your gender')]+list(CustomUser.GENDER_CHOICES),required=True)    
     
+    profile_picture = forms.ImageField(
+        required=False,
+        label='Profile picture',
+        widget=forms.FileInput(attrs={'class':'form-control-file'}),
+        )
+    
     class Meta:
         model = CustomUser
-        fields = ['username','first_name','last_name', 'email','birthdate','gender'] # Fields to edit
+        fields = ['username','first_name','last_name', 'email','birthdate','gender','profile_picture'] # Fields to edit
         widgets = {
             'birthdate': forms.DateInput(attrs={'type': 'date'}), # Improved date picker
         }
@@ -75,6 +81,6 @@ class ProfileForm(forms.ModelForm):
 
         elif user and user.user_type == 'patient':
             self.fields['address'] = forms.CharField(max_length=125,help_text='Your address info')
-            self.fields['medical_history'] = forms.CharField( widget=forms.Textarea, required=True, error_messages={'required': 'Please provide medical history.'}) # Custom error message
+            self.fields['medical_history'] = forms.CharField( widget=forms.Textarea(attrs={'rows': '2'}), required=True, error_messages={'required': 'Please provide medical history.'}) # Custom error message
 
     
