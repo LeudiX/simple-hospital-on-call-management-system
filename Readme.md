@@ -55,6 +55,7 @@ project, i recommend delete all the migrations files, pycache or just the db.
 -*DONE*Add picture to users profile
 -Add service stats on main page (Number of doctors, patients attended, doctors team ) 
 -Check Vital Signs validation when creating a new consultation by doctor
+-Check consultations inconsistencies with users deleted in system
 -Add profile access to admin on system management
 -*WORKING*Add consultations management on admin session with sorting, pagination and filtering
 -Consider implementing a more robust file management strategy, like checking file types and sizes, to ensure that application handles image uploads securely and efficiently
