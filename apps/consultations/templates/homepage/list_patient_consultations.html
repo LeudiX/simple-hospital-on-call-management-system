@@ -18,9 +18,9 @@
                         </div>
                         <div class="col-sm-3">
                             <!-- Search Form -->
-                            <form method="get" action="{% url 'consultations_admin'%}">
-                                <input type="text" name="search_query" placeholder="Search by name" value="{{ search_query }}">
-                                <button type="submit">Search</button>
+                            <form class="d-flex" method="get" action="{% url 'consultations_admin'%}">
+                                <input class="form-control me-2"  type="text" name="search_query" placeholder="Search by name" aria-label="Search" value="{{ search_query }}">
+                                <button class="btn btn-outline-success" type="submit"> <i class="fas fa-search fa-lg fa-fw" data-toggle="tooltip" title="Search"></i></button>
                                 
                                 <!-- Include other filters as hidden inputs to keep state during search -->
                                 <!-- Retain valid consultation type selection -->
@@ -30,8 +30,8 @@
                             </form>
                         </div>
                         <div class="col-sm-2">
-                            <form method="get" action="">
-                                <select name="consultation_type" onchange="this.form.submit()">
+                            <form class="d-flex" method="get" action="">
+                                <select class="form-select" name="consultation_type" onchange="this.form.submit()">
                                     <option value="">All Consultations</option>
                                     <option value="common" {% if consultation_type == 'common' %}selected{% endif %}>Common</option>
                                     <option value="urgency" {% if consultation_type == 'urgency' %}selected{% endif %}>Urgency</option>
@@ -53,16 +53,31 @@
                             <th>
                                 <!-- Checkbox parent -->
                                 <span class="custom-checkbox">
-                                    <input type="checkbox" id="selectAll">
-                                    <label for="selectAll"></label>
+                                    <input type="checkbox" id="selectAll" data-toggle="tooltip" title="selectAll">
                                 </span>
                             </th>
                             <th>#</th>
                             <th>Patient</th>
                             <!--<th>Patient</th>-->
                             <th>Address</th>
-                            <th>Attended by</th>
-                            <th>On</th>
+                            <th>
+                                {% if sort_by == 'attended_by' and order == 'asc' %}
+                                    <a href="?sort=attended_by&order=desc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">Attended by ▲</a>
+                                {% elif sort_by == 'attended_by' and order == 'desc' %}
+                                    <a href="?sort=attended_by&order=asc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">Attended by ▼</a>
+                                {% else %}
+                                    <a href="?sort=attended_by&order=asc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">Attended by</a>
+                                {% endif %}
+                            </th>
+                            <th>
+                                {% if sort_by == 'consultation_date' and order == 'asc' %}
+                                    <a href="?sort=consultation_date&order=desc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">On ▲</a>
+                                {% elif sort_by == 'consultation_date' and order == 'desc' %}
+                                    <a href="?sort=consultation_date&order=asc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">On ▼</a>
+                                {% else %}
+                                    <a href="?sort=consultation_date&order=asc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">On</a>
+                                {% endif %}
+                            </th>
                             <th>Type</th>
                             <th>Notes</th>
                             <th>Status</th> 

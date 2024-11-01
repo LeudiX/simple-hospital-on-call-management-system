@@ -11,6 +11,8 @@ from .forms import CommonConsultationForm, ConsultationForm, PatientConsultation
 from datetime import timedelta
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
+from django.db.models.functions import Concat
+from django.db.models import Value
 
 # Consultations views.
 class home_page(TemplateView):
@@ -208,7 +210,7 @@ class PatientConsultationListView(LoginRequiredMixin,ListView):
                 Q(consultation__doctor__user__first_name__icontains=search_query)|       
                 Q(consultation__doctor__user__last_name__icontains=search_query)       
             )
-            print(f'{queryset}')
+            # print(f'{queryset}') # Debugging
             
         # Get filter parameters from the request
         consultation_type = self.request.GET.get('consultation_type','') # Get value from the name attribute of the input field or None
@@ -218,13 +220,44 @@ class PatientConsultationListView(LoginRequiredMixin,ListView):
            queryset = queryset.filter(consultation_type=consultation_type) # Return only the consultations of the specified type
            print(f'{queryset}')
         
-        return queryset.order_by('consultation__consultation_date')  # Get all the consultations ordered by date
+        # Define allowed sort fields
+        sort_by = self.request.GET.get('sort', 'consultation_date')  # Default sort field
+        order = self.request.GET.get('order', 'asc')  # Default order
+        
+        # Sorting logic
+        if sort_by == 'attended_by':
+            # Annotate with full name for sorting
+            queryset = queryset.annotate(
+                attended_by=Concat(
+                    'consultation__doctor__user__first_name', 
+                    Value(' '), 
+                    'consultation__doctor__user__last_name'
+                )
+            )
+            sort_field = 'attended_by'
+        else:
+            sort_field = 'consultation__consultation_date'
+        
+        # Apply ordering
+        if order == 'desc':
+            sort_field = f'-{sort_field}' # Indicate descending order of sorteable field
+    
+        return queryset.order_by(sort_field)  # Get all the consultations ordered by sort field
     
     # Get the context data and add the consultation_type and search_query to it
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)     
+        context['sort_by'] = self.request.GET.get('sort', 'consultation_date') # Add sort_by to the context
+        context['order'] = self.request.GET.get('order', 'asc') # Add order to the context
         context['consultation_type'] = self.request.GET.get('consultation_type', '') # Add consultation_type to the context
         context['search_query'] = self.request.GET.get('search_query', '') # Add search_query to the context
+        
+        
+        
+        
+        
+        
+        
         return context
 
 """Custom view for handle patient consultation details in system administration"""
