@@ -5,13 +5,12 @@ from django.contrib import messages
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView,ListView
-from django.core.paginator import Paginator
 from apps.consultations.models import Consultation, PatientConsultation, UrgencyConsultation, CommonConsultation, VitalSigns
-from apps.users.models import CustomUser, Doctor, Patient
+from apps.users.models import  Doctor, Patient
 from .forms import CommonConsultationForm, ConsultationForm, PatientConsultationForm, UrgencyConsultationForm, VitalSignsForm
 from datetime import timedelta
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.db.models import Q
 
 # Consultations views.
 class home_page(TemplateView):
@@ -192,18 +191,40 @@ class PatientConsultationListView(LoginRequiredMixin,ListView):
     template_name  = 'homepage/list_patient_consultations.html'
     paginate_by = 4
     
-    # Query the consultations by consultation type
-    def get_queryset(self):   
-        consultation_type= self.request.GET.get('consultation_type')
-        print(f'{consultation_type}') # Debugging purposes only
+    # Common queries applied over patient_consultations 
+    def get_queryset(self):
+        
+        # Get search query
+        search_query = self.request.GET.get('search_query','') # Get value from the name attribute of the input field or None
+        
+        # Base queryset
+        queryset = PatientConsultation.objects.all()
+        
+        # Filter by patient or doctor name based on search query
+        if search_query:
+            queryset = queryset.filter(
+                Q(patient__user__first_name__icontains=search_query)|
+                Q(patient__user__last_name__icontains=search_query)|
+                Q(consultation__doctor__user__first_name__icontains=search_query)|       
+                Q(consultation__doctor__user__last_name__icontains=search_query)       
+            )
+            print(f'{queryset}')
+            
+        # Get filter parameters from the request
+        consultation_type = self.request.GET.get('consultation_type','') # Get value from the name attribute of the input field or None
+        
+        # Filter by consultation_type if specified
         if consultation_type:
-           return PatientConsultation.objects.filter(consultation_type=consultation_type) # Return only the consultations of the specified type
-        return super().get_queryset().order_by('consultation__consultation_date')   # Return all the consultations ordered by date
+           queryset = queryset.filter(consultation_type=consultation_type) # Return only the consultations of the specified type
+           print(f'{queryset}')
+        
+        return queryset.order_by('consultation__consultation_date')  # Get all the consultations ordered by date
     
-    # Get the context data and add the consultation_type to it
+    # Get the context data and add the consultation_type and search_query to it
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)     
         context['consultation_type'] = self.request.GET.get('consultation_type', '') # Add consultation_type to the context
+        context['search_query'] = self.request.GET.get('search_query', '') # Add search_query to the context
         return context
 
 """Custom view for handle patient consultation details in system administration"""

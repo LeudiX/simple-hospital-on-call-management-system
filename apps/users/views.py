@@ -124,7 +124,7 @@ def profile_view(request):
 def list_users(request):
     
     # Get search query
-    search_query =  request.GET.get('search','')  
+    search_query =  request.GET.get('search','') # Get value from the name attribute of the input field
     
     # Fetch and sort users by username
     # Excluding superusers by filtering out users where is_superuser is True

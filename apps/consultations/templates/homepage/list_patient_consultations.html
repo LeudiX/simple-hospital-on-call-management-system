@@ -1,4 +1,5 @@
 {% extends "base/base.html" %}
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block navbar %}
@@ -12,10 +13,22 @@
             <div class="table-wrapper">
                 <div class="table-title">
                     <div class="row">
-                        <div class="col-sm-6">
-                            <h2>Patient's Consultations <b>Management</b></h2>
+                        <div class="col-sm-5">
+                            <h2>Consultations <b>Management</b></h2>
                         </div>
-                        <div class="col-sm-2"></div>
+                        <div class="col-sm-3">
+                            <!-- Search Form -->
+                            <form method="get" action="{% url 'consultations_admin'%}">
+                                <input type="text" name="search_query" placeholder="Search by name" value="{{ search_query }}">
+                                <button type="submit">Search</button>
+                                
+                                <!-- Include other filters as hidden inputs to keep state during search -->
+                                <!-- Retain valid consultation type selection -->
+                                {% if consultation_type %}
+                                    <input type="hidden" name="consultation_type" value="{{ consultation_type }}">
+                                {% endif %}
+                            </form>
+                        </div>
                         <div class="col-sm-2">
                             <form method="get" action="">
                                 <select name="consultation_type" onchange="this.form.submit()">
@@ -46,6 +59,7 @@
                             </th>
                             <th>#</th>
                             <th>Patient</th>
+                            <!--<th>Patient</th>-->
                             <th>Address</th>
                             <th>Attended by</th>
                             <th>On</th>
@@ -64,9 +78,15 @@
                                 </span>
                             </td>
                             <td>{{pc.id}}</td>
-                            <td>{{pc.patient.user.get_full_name}}</td>
+                            <td>
+                                <a><img src="{% if pc.patient.user.profile_picture %}{{ pc.patient.user.profile_picture.url }}{% else %}{% static 'img/picture_profiles/default_profile_picture.png' %}{% endif %}" class="avatar" alt="{{pc.patient.user.username.capitalize}} profile picture" data-toggle="tooltip" title="{{pc.patient.user.get_full_name}}"></a>
+                            </td>
+                            <!--<td>{{pc.patient.user.get_full_name}}</td>-->
                             <td>{{pc.patient.address}}</td>
-                            <td>{{pc.consultation.doctor.user.get_full_name}}</td>
+                            <!--<td>{{pc.consultation.doctor.user.get_full_name}}</td>-->
+                            <td>
+                                <a><img src="{% if pc.consultation.doctor.user.profile_picture %}{{ pc.consultation.doctor.user.profile_picture.url }}{% else %}{% static 'img/picture_profiles/default_profile_picture.png' %}{% endif %}" class="avatar" alt="{{pc.consultation.doctor.user.username.capitalize}} profile picture" data-toggle="tooltip" title="{{pc.consultation.doctor.user.get_full_name}}"></a>
+                            </td>
                             <td>{{pc.consultation.consultation_date}}</td>
                             <td>{{pc.consultation_type.capitalize}}</td>
                             <td>{{pc.consultation.notes}}</td>

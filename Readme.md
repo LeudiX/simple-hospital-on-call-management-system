@@ -57,7 +57,7 @@ project, i recommend delete all the migrations files, pycache or just the db.
 - Check Vital Signs validation when creating a new consultation by doctor
 - Check consultations inconsistencies with users deleted in system
 - Add profile access to admin on system management
-- *WORKING*Add consultations management on admin session with sorting, pagination and filtering
+- *DONE*Add consultations management on admin session with sorting, pagination and filtering
 - Consider implementing a more robust file management strategy, like checking file types and sizes, to ensure that application handles image uploads securely and efficiently
 - Add Vital Signs management on admin session with sorting, pagination and filtering
 - Improve UI of consultations and vital signs management 
@@ -77,7 +77,8 @@ project, i recommend delete all the migrations files, pycache or just the db.
 - Go to console and type *py manage.py shell*
 - For this especific cased i have to remove this field, so i write in console the following:
 
-`from apps.users.models import CustomUser  # Adjusted the path to CustomUser model 
+```python
+from apps.users.models import CustomUser  # Adjusted the path to CustomUser model 
 
 #### Filter users with profile_picture set to the default image path
 users_with_default_image = CustomUser.objects.filter(profile_picture='profile_pics/default_profile_picture2.png')
@@ -88,8 +89,10 @@ for user in users_with_default_image:
     user.save()
 
 print(f"Updated {users_with_default_image.count()} users to use the static default profile picture.")
-`
+```
 - Then type *Enter* and write `exit()` in shell
 - Make migrations in users 
 - Migrate
 - Run again
+    
+    
