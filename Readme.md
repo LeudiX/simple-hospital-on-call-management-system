@@ -42,7 +42,7 @@ project, i recommend delete all the migrations files, pycache or just the db.
 
 ## View the schema
 
--  sqlit3 tools, install it and setting it up as enviroment variables in you path
+- sqlit3 tools, install it and setting it up as enviroment variables in you path
 - Type sqlite3 *dbname* in your terminal
 - After entering to the sqlite3 CLI, type *.tables* to see the hole schema
 - Type .schema *tablename* to see the table schema
@@ -52,24 +52,24 @@ project, i recommend delete all the migrations files, pycache or just the db.
 -Type *python manage.py createsuperuser*
 
 ## TODO and solved tasks:
-- *DONE*Add picture to users profile
+- *DONE* Add picture to users profile
 - Add service stats on main page (Number of doctors, patients attended, doctors team ) 
 - Check Vital Signs validation when creating a new consultation by doctor
 - Check consultations inconsistencies with users deleted in system
 - Add profile access to admin on system management
-- *DONE*Add consultations management on admin session with sorting, pagination and filtering
+- *DONE* Add consultations management on admin session with sorting, pagination and filtering
 - Consider implementing a more robust file management strategy, like checking file types and sizes, to ensure that application handles image uploads securely and efficiently
 - Add Vital Signs management on admin session with sorting, pagination and filtering
 - Improve UI of consultations and vital signs management 
-- *DONE*Add search filter bar and pagination to users management (Or use datatables instead)
+- *DONE* Add search filter bar and pagination to users management (Or use datatables instead)
 - *DONE* Change color of active field to red when user get deactivated 
 - *DONE* Add a mass removal for users management
-- *DONE*Check mass removal action message not showing in UI
-- *DONE*Add links to Common and Urgency services for authenticated and enrolled users only
-- *DONE*Solve issue when trying to submit a logout form already outside a session (JS issue)
+- *DONE* Check mass removal action message not showing in UI
+- *DONE* Add links to Common and Urgency services for authenticated and enrolled users only
+- *DONE* Solve issue when trying to submit a logout form already outside a session (JS issue)
 - *DONE* Relocated the script to avoid JS console issues with non authenticated users
 - *DONE* Added rol treatment to  avoid JS console issues when admin accessing consultations for management
-- *DONE*Prevented the browser from autofilling username and password fields in user registration form
+- *DONE* Prevented the browser from autofilling username and password fields in user registration form
 - *DONE* Added dynamic injection of data into pt_consultations modal details for urgency and common type consultations
 
 ### Solved issue with profile_picture field CustomUser model related also with media files default url in database

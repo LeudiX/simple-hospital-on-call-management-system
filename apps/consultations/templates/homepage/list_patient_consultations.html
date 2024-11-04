@@ -9,10 +9,7 @@
 {% block content %}
 <div class="row g-3 text-white">
     <div class="container-xl">
-        <div class="table-responsive">
-            <div class="table-wrapper">
-                <div class="table-title">
-                    <div class="row">
+        <div class="row">
                         <div class="col-sm-5">
                             <h2>Consultations <b>Management</b></h2>
                         </div>
@@ -45,81 +42,70 @@
                             </button>
                             <a href="#" class="btn btn-success"><i class="fas fa-file-alt fa-lg fa-fw" data-toggle="tooltip" title="Export to Excel"></i></a>
                         </div>
+        </div>
+        <div class="row py-3">
+                    <div class="col-md-4">
+                        <h4>Select All</h4>
+                        <!-- Checkbox parent -->
+                        <span class="custom-checkbox">
+                            <input type="checkbox" id="selectAll" data-toggle="tooltip" title="selectAll">
+                        </span>
+                    </div>
+                    <div class="col-md-4 fw-bold">
+                        <h4>Sort by Doctor name</h4>
+                        {% if sort_by == 'attended_by' and order == 'asc' %}
+                            <a class="text-success text-decoration-none"  href="?sort=attended_by&order=desc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">Attended by ▲</a>
+                        {% elif sort_by == 'attended_by' and order == 'desc' %}
+                            <a class="text-success text-decoration-none" href="?sort=attended_by&order=asc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">Attended by ▼</a>
+                        {% else %}
+                            <a class="text-success text-decoration-none" href="?sort=attended_by&order=asc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">Attended by</a>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4 fw-bold">
+                        <h4>Sort by consultation date</h4>
+                        {% if sort_by == 'consultation_date' and order == 'asc' %}
+                            <a class="text-success text-decoration-none" href="?sort=consultation_date&order=desc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">On ▲</a>
+                        {% elif sort_by == 'consultation_date' and order == 'desc' %}
+                            <a class="text-success text-decoration-none" href="?sort=consultation_date&order=asc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">On ▼</a>
+                        {% else %}
+                            <a class="text-success text-decoration-none" href="?sort=consultation_date&order=asc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">On</a>
+                        {% endif %}
+                    </div>
+        </div>
+        <!--Card Structure-->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for consultation in patient_consultations %}
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body bg-dark d-flex align-items-center">
+                        <!-- Checkbox childs -->
+                        <span class="custom-checkbox position-absolute top-0 start-0">
+                                <input type="checkbox" class="pc-checkbox" value="{{ consultation.id }}">
+                         </span>
+                            <div>
+                            <img src="{% if consultation.patient.user.profile_picture %}{{ consultation.patient.user.profile_picture.url }}{% else %}{% static 'img/default_profile_picture.png' %}{% endif %}" 
+                            alt="{{ consultation.patient.user.get_full_name }} profile picture" 
+                            class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                <div class="d-inline-flex p-2 gap-1">
+                                    <a class="details" data-bs-toggle="modal" data-bs-target="#detailsPCModal" onclick="loadPCDetails('{{consultation.id}}')"><i class="fas fa-eye fa-md fa-fw text-info" data-toggle="tooltip" title="Details"></i></a>
+                                    <a class="delete"  data-bs-toggle="modal" data-bs-target="#deletePCModal" onclick="loadDeletePCConfirm('{{consultation.id}}')"><i class="fas fa-user-times fa-md fa-fw text-danger" data-toggle="tooltip" title="Delete"></i></a>    
+                                </div>    
+                             </div>
+                        <div class="text-white">
+                            <h5 class="card-title">{{ consultation.patient.user.get_full_name }}</h5>
+                            <p class="card-text mb-1"><span class="text-info fw-bold">Date: </span><span class="text-white">{{ consultation.consultation.consultation_date }}</span></p>
+                            <p class="card-text mb-1"><span class="text-info fw-bold">Type: </span><span class="text-white">{{ consultation.consultation_type.capitalize }}</span></p>
+                            <p class="card-text mb-1"><span class="text-info fw-bold">Attended by: </span> <span class="text-white">{{ consultation.consultation.doctor.user.get_full_name }}</span></p>
+                        </div>
                     </div>
                 </div>
-                <table id="consultations-datatable" class="table text-white">
-                    <thead>
-                        <tr>
-                            <th>
-                                <!-- Checkbox parent -->
-                                <span class="custom-checkbox">
-                                    <input type="checkbox" id="selectAll" data-toggle="tooltip" title="selectAll">
-                                </span>
-                            </th>
-                            <th>#</th>
-                            <th>Patient</th>
-                            <!--<th>Patient</th>-->
-                            <th>Address</th>
-                            <th>
-                                {% if sort_by == 'attended_by' and order == 'asc' %}
-                                    <a href="?sort=attended_by&order=desc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">Attended by ▲</a>
-                                {% elif sort_by == 'attended_by' and order == 'desc' %}
-                                    <a href="?sort=attended_by&order=asc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">Attended by ▼</a>
-                                {% else %}
-                                    <a href="?sort=attended_by&order=asc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">Attended by</a>
-                                {% endif %}
-                            </th>
-                            <th>
-                                {% if sort_by == 'consultation_date' and order == 'asc' %}
-                                    <a href="?sort=consultation_date&order=desc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">On ▲</a>
-                                {% elif sort_by == 'consultation_date' and order == 'desc' %}
-                                    <a href="?sort=consultation_date&order=asc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">On ▼</a>
-                                {% else %}
-                                    <a href="?sort=consultation_date&order=asc&search={{ search_query }}{% if consultation_type %}&consultation_type={{ consultation_type }}{% endif %}">On</a>
-                                {% endif %}
-                            </th>
-                            <th>Type</th>
-                            <th>Notes</th>
-                            <th>Status</th> 
-                            <th>Actions</th> 
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for pc in patient_consultations %}
-                        <tr>
-                            <td> <!-- Checkbox childs -->
-                                <span class="custom-checkbox">
-                                    <input type="checkbox" class="pc-checkbox" value="{{ pc.id }}">
-                                </span>
-                            </td>
-                            <td>{{pc.id}}</td>
-                            <td>
-                                <a><img src="{% if pc.patient.user.profile_picture %}{{ pc.patient.user.profile_picture.url }}{% else %}{% static 'img/picture_profiles/default_profile_picture.png' %}{% endif %}" class="avatar" alt="{{pc.patient.user.username.capitalize}} profile picture" data-toggle="tooltip" title="{{pc.patient.user.get_full_name}}"></a>
-                            </td>
-                            <!--<td>{{pc.patient.user.get_full_name}}</td>-->
-                            <td>{{pc.patient.address}}</td>
-                            <!--<td>{{pc.consultation.doctor.user.get_full_name}}</td>-->
-                            <td>
-                                <a><img src="{% if pc.consultation.doctor.user.profile_picture %}{{ pc.consultation.doctor.user.profile_picture.url }}{% else %}{% static 'img/picture_profiles/default_profile_picture.png' %}{% endif %}" class="avatar" alt="{{pc.consultation.doctor.user.username.capitalize}} profile picture" data-toggle="tooltip" title="{{pc.consultation.doctor.user.get_full_name}}"></a>
-                            </td>
-                            <td>{{pc.consultation.consultation_date}}</td>
-                            <td>{{pc.consultation_type.capitalize}}</td>
-                            <td>{{pc.consultation.notes}}</td>
-                            <td>{{pc.consultation.status}}</td>
-                            <td>
-                                <a class="details" data-bs-toggle="modal" data-bs-target="#detailsPCModal" onclick="loadPCDetails('{{pc.id}}')"><i class="fas fa-eye fa-lg fa-fw text-info" data-toggle="tooltip" title="Details"></i></a>
-                                <a class="delete"  data-bs-toggle="modal" data-bs-target="#deletePCModal" onclick="loadDeletePCConfirm('{{pc.id}}')"><i class="fas fa-user-times fa-lg fa-fw text-danger" data-toggle="tooltip" title="Delete"></i></a>
-                            </td>
-                            {% empty %}
-                            <tr>
-                                <td colspan="12" class="text-center text-danger bg-warning"><strong>No consultations registered in system!!!</strong></td>
-                            </tr>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
             </div>
-        </div>      
+             {% empty %}
+            <div class="row md-12">
+                <span class="text-center text-danger bg-warning"><strong>No consultations registered in system!!!</strong></span>
+            </div>
+            {% endfor %}
+        </div>     
     </div>
 </div>
 
