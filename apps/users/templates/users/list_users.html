@@ -7,12 +7,8 @@
 
 {% block content %}
 <div class="row g-3 text-white">
-    {% if user.is_superuser %}
     <div class="container-xl">
-        <div class="table-responsive">
-            <div class="table-wrapper">
-                <div class="table-title">
-                    <div class="row">
+        <div class="row">
                         <div class="col-sm-4">
                             <h2>User's <b>Management</b></h2>
                         </div>
@@ -48,90 +44,83 @@
                             <a href="#" class="btn btn-success"><i class="fas fa-user-plus fa-lg fa-fw" data-toggle="tooltip" title="Add New User"></i></a>
                             <a href="#" class="btn btn-success"><i class="fas fa-file-alt fa-lg fa-fw" data-toggle="tooltip" title="Export to Excel"></i></a>						
                         </div>
+        </div>
+        <div class="row py-3">
+            <div class="col-md-3">
+                <h4>Select All</h4>
+                <!-- Checkbox parent -->
+                <span class="custom-checkbox">
+                    <input type="checkbox" id="selectAll"  data-toggle="tooltip" title="selectAll">
+                </span>
+            </div>
+            <div class="col-md-3 fw-bold">
+                <h4>Sort by Username</h4>
+                {% if sort_by == 'username' and order == 'asc' %}
+                    <a class="text-success text-decoration-none" href="?sort=username&order=desc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Username ▲</a>
+                {% elif sort_by == 'username' and order == 'desc' %}
+                    <a class="text-success text-decoration-none" href="?sort=username&order=asc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Username ▼</a>
+                {% else %}
+                    <a class="text-success text-decoration-none" href="?sort=username&order=asc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Username</a>
+                {% endif %}
+            </div>
+            <div class="col-md-3 fw-bold">
+                <h4>Sort by Birthdate</h4>
+                {% if sort_by == 'birthdate' and order == 'asc' %}
+                    <a class="text-success text-decoration-none" href="?sort=birthdate&order=desc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Birthdate ▲</a>
+                {% elif sort_by == 'birthdate' and order == 'desc' %}
+                    <a class="text-success text-decoration-none" href="?sort=birthdate&order=asc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Birthdate ▼</a>
+                {% else %}
+                    <a class="text-success text-decoration-none" href="?sort=birthdate&order=asc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Birthdate</a>
+                {% endif %}
+            </div>
+            <div class="col-md-3 fw-bold">
+                <h4>Sort by Join Date</h4>
+                {% if sort_by == 'date_joined' and order == 'asc' %}
+                    <a class="text-success text-decoration-none" href="?sort=date_joined&order=desc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Date Joined ▲</a>
+                {% elif sort_by == 'date_joined' and order == 'desc' %}
+                    <a class="text-success text-decoration-none" href="?sort=date_joined&order=asc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Date Joined ▼</a>
+                {% else %}
+                    <a class="text-success text-decoration-none" href="?sort=date_joined&order=asc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Date Joined</a>
+                {% endif %}
+            </div>
+        </div>
+        <!--Card Structure-->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for user in users %}
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body bg-dark d-flex align-items-center">
+                        <!-- Checkbox childs -->
+                        <span class="custom-checkbox position-absolute top-0 start-0">
+                            <input type="checkbox" class="user-checkbox" value="{{ user.user.id }}">
+                        </span>
+                        <div class="d-grid px-2 me-2">
+                            <img src="{% if user.user.profile_picture %}{{ user.user.profile_picture.url }}{% else %}{% static 'img/default_profile_picture.png' %}{% endif %}" 
+                            alt="{{ user.user.get_full_name }} profile picture" 
+                            class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;">
+                            <div class="d-inline-flex p-2 gap-1">
+                                <a class="edit" data-bs-toggle="modal" data-bs-target="#editUserModal" onclick="loadUserDetails('{{user.user.id}}')"><i class="fas fa-user-edit fa-md fa-fw text-success" data-toggle="tooltip" title="Edit"></i></a>
+                                <a class="delete" data-bs-toggle="modal" data-bs-target="#deleteUserModal" onclick="loadDeleteUserConfirm('{{user.user.id}}')" ><i class="fas fa-user-times fa-md fa-fw text-danger" data-toggle="tooltip" title="Delete"></i></a>
+                            </div>
+                        </div>
+                        <div class="text-white">
+                            <h5 class="card-title">{{user.user.username}}</h5>
+                            <p class="card-text mb-1"><span class="text-info fw-bold">Email: </span><span class="text-white">{{user.user.email}}</span></p>
+                            <p class="card-text mb-1"><span class="text-info fw-bold">Gender: </span><span class="text-white">{{user.user.gender}}</span></p>
+                            <p class="card-text mb-1"><span class="text-info fw-bold">Birthdate: </span><span class="text-white">{{user.user.birthdate}}</span></p>
+                            <p class="card-text mb-1"><span class="text-info fw-bold">Age: </span><span class="text-white">{{user.age}}</span></p>
+                            <p class="card-text mb-1"><span class="text-info fw-bold">Joined: </span><span class="text-white">{{user.user.date_joined}}</span></p>
+                            <p class="card-text mb-1"><span class="text-info fw-bold">Rol: </span><span class="text-warning">{{user.user.user_type.capitalize}}</span></p>
+                            <p class="card-text mb-1"><span class="text-info fw-bold">Active: </span><span class="text-white">{% if user.user.is_active%}<span class="status text-success fw-bold">Yes</span>{% else %}<span class="status text-danger fw-bold">No</span>{% endif %}</span></p>
+                            </div>
                     </div>
                 </div>
-                <!--Users table-->
-                <table class="table text-white">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <!-- Checkbox parent -->
-                                    <span class="custom-checkbox">
-                                        <input type="checkbox" id="selectAll"  data-toggle="tooltip" title="selectAll">
-                                    </span>
-                                </th>
-                                <th>#</th>
-                                <th>Picture</th>
-                                <th>
-                                    {% if sort_by == 'username' and order == 'asc' %}
-                                        <a href="?sort=username&order=desc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Username ▲</a>
-                                    {% elif sort_by == 'username' and order == 'desc' %}
-                                        <a href="?sort=username&order=asc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Username ▼</a>
-                                    {% else %}
-                                        <a href="?sort=username&order=asc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Username</a>
-                                    {% endif %}
-                                </th>						
-                                <th>Email</th>
-                                <th>
-                                    {% if sort_by == 'birthdate' and order == 'asc' %}
-                                        <a href="?sort=birthdate&order=desc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Birthdate ▲</a>
-                                    {% elif sort_by == 'birthdate' and order == 'desc' %}
-                                        <a href="?sort=birthdate&order=asc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Birthdate ▼</a>
-                                    {% else %}
-                                        <a href="?sort=birthdate&order=asc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Birthdate</a>
-                                    {% endif %}
-                                <th>
-                                    Age
-                                </th>
-                                <th>Gender</th>
-                                <th>
-                                    {% if sort_by == 'date_joined' and order == 'asc' %}
-                                        <a href="?sort=date_joined&order=desc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Date Joined ▲</a>
-                                    {% elif sort_by == 'date_joined' and order == 'desc' %}
-                                        <a href="?sort=date_joined&order=asc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Date Joined ▼</a>
-                                    {% else %}
-                                        <a href="?sort=date_joined&order=asc&search={{ search_query }}{% if user_type %}&user_type={{ user_type }}{% endif %}">Date Joined</a>
-                                    {% endif %}
-                                </th>
-                                <th>Role</th>
-                                <th>Active</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for user in users %}
-                            <tr><!--Using this convention to get access to users_age list with users and age information-->
-                                <td>
-                                    <!-- Checkbox childs -->
-                                    <span class="custom-checkbox">
-                                        <input type="checkbox" class="user-checkbox" value="{{ user.user.id }}">
-                                    </span>
-                                </td>
-                                <td>{{user.user.id}}</td>
-                                <td>
-                                    <a><img src="{% if user.user.profile_picture %}{{ user.user.profile_picture.url }}{% else %}{% static 'img/picture_profiles/default_profile_picture.png' %}{% endif %}" class="avatar" alt="{{user.user.username.capitalize}} profile picture"></a>
-                                </td>
-                                <td>{{user.user.username}}</td>
-                                <td>{{user.user.email}}</td>                        
-                                <td>{{user.user.birthdate}}</td>
-                                <td>{{user.age}}</td>
-                                <td>{{user.user.gender}}</td>
-                                <td>{{user.user.date_joined}}</td>
-                                <td>{{user.user.user_type.capitalize}}</td>
-                                <td>{% if user.user.is_active%}<span class="status text-success fw-bold">Yes</span>{% else %}<span class="status text-danger fw-bold">No</span>{% endif %}</td>
-                                <td>
-                                    <a class="edit" data-bs-toggle="modal" data-bs-target="#editUserModal" onclick="loadUserDetails('{{user.user.id}}')"><i class="fas fa-user-edit fa-lg fa-fw text-success" data-toggle="tooltip" title="Edit"></i></a>
-                                    <a class="delete" data-bs-toggle="modal" data-bs-target="#deleteUserModal" onclick="loadDeleteUserConfirm('{{user.user.id}}')" ><i class="fas fa-user-times fa-lg fa-fw text-danger" data-toggle="tooltip" title="Delete"></i></a>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="12" class="text-center text-danger bg-warning"><strong>No users registered in system!!!</strong></td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                </table>
             </div>
+            {% empty %}
+            <div class="w-100">
+                <span class="d-block p-2 bg-warning text-center text-danger"><strong>No users were resolved!!!</strong></span>
+            </div>
+            {% endfor %}
         </div>
         <!-- Pagination controls -->
         <div class="pagination justify-content-center py-2">
@@ -193,9 +182,12 @@
             </div>
         </div>
     </div>
-    {% endif %} 
 </div>
 {% endblock content %}
+
+{% block footer %}
+    {% include 'homepage/footer.html' %}
+{% endblock %}
 
 {% block script %}
 <script>

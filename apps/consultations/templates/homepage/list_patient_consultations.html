@@ -81,16 +81,16 @@
                         <!-- Checkbox childs -->
                         <span class="custom-checkbox position-absolute top-0 start-0">
                                 <input type="checkbox" class="pc-checkbox" value="{{ consultation.id }}">
-                         </span>
-                            <div>
+                        </span>
+                        <div class="d-grid px-2 me-2">
                             <img src="{% if consultation.patient.user.profile_picture %}{{ consultation.patient.user.profile_picture.url }}{% else %}{% static 'img/default_profile_picture.png' %}{% endif %}" 
                             alt="{{ consultation.patient.user.get_full_name }} profile picture" 
-                            class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                                <div class="d-inline-flex p-2 gap-1">
-                                    <a class="details" data-bs-toggle="modal" data-bs-target="#detailsPCModal" onclick="loadPCDetails('{{consultation.id}}')"><i class="fas fa-eye fa-md fa-fw text-info" data-toggle="tooltip" title="Details"></i></a>
-                                    <a class="delete"  data-bs-toggle="modal" data-bs-target="#deletePCModal" onclick="loadDeletePCConfirm('{{consultation.id}}')"><i class="fas fa-user-times fa-md fa-fw text-danger" data-toggle="tooltip" title="Delete"></i></a>    
-                                </div>    
-                             </div>
+                            class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;">
+                            <div class="d-inline-flex p-2 gap-1">
+                                <a class="details" data-bs-toggle="modal" data-bs-target="#detailsPCModal" onclick="loadPCDetails('{{consultation.id}}')"><i class="fas fa-eye fa-md fa-fw text-info" data-toggle="tooltip" title="Details"></i></a>
+                                <a class="delete"  data-bs-toggle="modal" data-bs-target="#deletePCModal" onclick="loadDeletePCConfirm('{{consultation.id}}')"><i class="fas fa-user-times fa-md fa-fw text-danger" data-toggle="tooltip" title="Delete"></i></a>    
+                            </div>    
+                        </div>
                         <div class="text-white">
                             <h5 class="card-title">{{ consultation.patient.user.get_full_name }}</h5>
                             <p class="card-text mb-1"><span class="text-info fw-bold">Date: </span><span class="text-white">{{ consultation.consultation.consultation_date }}</span></p>
@@ -100,9 +100,9 @@
                     </div>
                 </div>
             </div>
-             {% empty %}
-            <div class="row md-12">
-                <span class="text-center text-danger bg-warning"><strong>No consultations registered in system!!!</strong></span>
+            {% empty %}
+            <div class="w-100">
+                <span class="d-block p-2 bg-warning text-center text-white"><strong>No consultations were resolved!!!</strong></span>
             </div>
             {% endfor %}
         </div>     
@@ -176,8 +176,12 @@
         </div>
     </div>
 </div>
-
 {% endblock content %}
+
+
+{% block footer %}
+    {% include 'homepage/footer.html' %}
+{% endblock %}
 
 {% block script %}
 <script>
