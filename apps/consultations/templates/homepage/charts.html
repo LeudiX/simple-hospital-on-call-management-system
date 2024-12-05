@@ -1,0 +1,143 @@
+<!-- Website Donughts Graphs Stats -->
+<div class="row mx-4">
+  <div class="col-md-6">
+    <div class="card p-3 bg-success">
+      <div class="filter d-inline-flex">
+        <h5 class="text-white flex-grow-1">Hospital Stats <span>| Today</span></h5>
+        <a class="icon " href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow bg-success border border-2 border-success rounded">
+          <li class="dropdown-header text-start">
+            <h5 class="text-white">Filter</h5>
+          </li>
+          <li><a class="dropdown-item" href="#">Today</a></li>
+          <li><a class="dropdown-item" href="#">This Month</a></li>
+          <li><a class="dropdown-item" href="#">This Year</a></li>
+        </ul>
+      </div>
+
+      <div class="card-body pb-0">
+        <div id="hospitalStatsChart" style="min-height: 400px;" class="echart"></div>
+
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            echarts.init(document.querySelector("#hospitalStatsChart")).setOption({
+              tooltip: {
+                trigger: 'item'
+              },
+              legend: {
+                top: '5%',
+                left: 'center'
+              },
+              series: [{
+                name: 'Users in system',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                avoidLabelOverlap: false,
+                label: {
+                  show: false,
+                  position: 'center'
+                },
+                emphasis: {
+                  label: {
+                    show: true,
+                    fontSize: '18',
+                    fontWeight: 'bold'
+                  }
+                },
+                labelLine: {
+                  show: false
+                },
+                data: [{
+                  value: 1048,
+                  name: 'Patients'
+                },
+                {
+                  value: 735,
+                  name: 'Doctors'
+                },
+                {
+                  value: 580,
+                  name: 'Nurses'
+                },
+                {
+                  value: 484,
+                  name: 'Auxiliar Staff'
+                },
+                {
+                  value: 300,
+                  name: 'Directives'
+                }
+                ]
+              }]
+            });
+          });
+        </script>
+
+      </div>
+    </div><!-- End Hospital Stats -->
+  </div>
+  <div class="col-md-6">
+    <div class="card p-3 bg-success">
+      <div class="filter d-inline-flex">
+        <h5 class="text-white flex-grow-1">Consultations Stats <span>| Today</span></h5>
+        <a class="icon " href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow bg-success border border-2 border-success rounded">
+          <li class="dropdown-header text-start">
+            <h5 class="text-white">Filter</h5>
+          </li>
+          <li><a class="dropdown-item" href="#">Today</a></li>
+          <li><a class="dropdown-item" href="#">This Month</a></li>
+          <li><a class="dropdown-item" href="#">This Year</a></li>
+        </ul>
+      </div>
+
+      <div class="card-body pb-0">
+        <div id="consultationsChart" style="min-height: 400px;" class="echart"></div>
+
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            echarts.init(document.querySelector("#consultationsChart")).setOption({
+              tooltip: {
+                trigger: 'item'
+              },
+              legend: {
+                top: '5%',
+                left: 'center'
+              },
+              series: [{
+                name: 'Users in system',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                avoidLabelOverlap: false,
+                label: {
+                  show: false,
+                  position: 'center'
+                },
+                emphasis: {
+                  label: {
+                    show: true,
+                    fontSize: '18',
+                    fontWeight: 'bold'
+                  }
+                },
+                labelLine: {
+                  show: false
+                },
+                data: [{
+                  value: 1048,
+                  name: 'Common consultations'
+                },
+                {
+                  value: 735,
+                  name: 'Urgency consultations'
+                },
+                ]
+              }]
+            });
+          });
+        </script>
+
+      </div>
+    </div><!-- End Hospital Stats -->
+  </div>
+</div>
