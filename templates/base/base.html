@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="{% static 'homepage/css/magic-nav.css' %}">
     <link rel="stylesheet" href="{% static 'homepage/css/im_carusel.css' %}">
     <link rel="stylesheet" href="{% static 'libs/bootstrap/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'libs/bootstrap/bootstrap_icons/bootstrap-icons.css' %}" >
 </head>
 
 <body class="bg-dark">
@@ -65,6 +66,11 @@
         </div>
     </main>
 
+    <!--Charts-->
+    {% block charts %}
+    {% endblock %}
+
+
     <!--Footer-->
     {% block footer %}
     {% endblock %}
@@ -73,6 +79,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'libs/bootstrap/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'libs/awesome_icons/font-awesome.js' %}"></script>
+<script src="{% static 'libs/echarts/echarts.min.js' %}"></script>
 
 {% block script %}
 <script>
