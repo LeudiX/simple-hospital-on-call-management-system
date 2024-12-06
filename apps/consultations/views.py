@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView,ListView
 from apps.consultations.models import Consultation, PatientConsultation, UrgencyConsultation, CommonConsultation, VitalSigns
-from apps.users.models import  Doctor, Patient
+from apps.users.models import  CustomUser, Doctor, Patient
 from .forms import CommonConsultationForm, ConsultationForm, PatientConsultationForm, UrgencyConsultationForm, VitalSignsForm
 from datetime import timedelta
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -17,27 +17,20 @@ from django.db.models import Value
 # Consultations views.
 class home_page(TemplateView):
     template_name = 'homepage/home.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["doctors_num"] = Doctor.objects.all().count(); # Get all doctors number
+        context["patients_num"] = Patient.objects.all().count(); # Get all patients number
+        context['staff_num'] = CustomUser.objects.filter(is_staff=True).count(); # Get all staff number
+
+        context['common_consultations_num'] = PatientConsultation.objects.filter(consultation_type='common').count(); # Get all common consultations number
+        context['urgency_consultations_num'] = PatientConsultation.objects.filter(consultation_type='urgency').count(); # Get all urgency consultations number
+        return context
+    
 
 class CreateConsultationView(LoginRequiredMixin,TemplateView):
     template_name = 'homepage/consultations.html'  # Consultations current template
-    """
-    def get(self, request, *args, **kwargs):
-        # Initialize forms
-        consultation_form = ConsultationForm()
-        patient_consultation_form = PatientConsultationForm()
-        urgency_consultation_form = UrgencyConsultationForm()
-        common_consultation_form = CommonConsultationForm()
-        vital_signs_form = VitalSignsForm()
-        
-        context = {
-            'form': consultation_form,
-            'patient_consultation_form': patient_consultation_form,
-            'urgency_consultation_form': urgency_consultation_form,
-            'common_consultation_form': common_consultation_form,
-            'vital_signs_form': vital_signs_form,
-        }
-        return self.render_to_response(context)
-    """
     
     """_Context data needed when loading the form (GET) Method_"""
     def get_context_data(self, **kwargs):
@@ -251,12 +244,6 @@ class PatientConsultationListView(LoginRequiredMixin,ListView):
         context['order'] = self.request.GET.get('order', 'asc') # Add order to the context
         context['consultation_type'] = self.request.GET.get('consultation_type', '') # Add consultation_type to the context
         context['search_query'] = self.request.GET.get('search_query', '') # Add search_query to the context
-        
-        
-        
-        
-        
-        
         
         return context
 
