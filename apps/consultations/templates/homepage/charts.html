@@ -1,5 +1,6 @@
 <!-- Website Donughts Graphs Stats -->
 <div class="row mx-4">
+  <!--Hospital Staff Stats Chart-->
   <div class="col-md-6">
     <div class="card p-3 bg-success">
       <div class="filter d-inline-flex">
@@ -40,7 +41,7 @@
                 emphasis: {
                   label: {
                     show: true,
-                    fontSize: '18',
+                    fontSize: '20',
                     fontWeight: 'bold'
                   }
                 },
@@ -48,24 +49,24 @@
                   show: false
                 },
                 data: [{
-                  value: 1048,
-                  name: 'Patients'
+                  value: {{patients_num}},
+                  name: 'Patients: {{patients_num}}'
                 },
                 {
-                  value: 735,
-                  name: 'Doctors'
+                  value: {{doctors_num}},
+                  name: 'Doctors: {{doctors_num}}'
                 },
                 {
-                  value: 580,
+                  value: 2,
                   name: 'Nurses'
                 },
                 {
-                  value: 484,
-                  name: 'Auxiliar Staff'
+                  value: {{staff_num}},
+                  name: 'Directives: {{staff_num}}'
                 },
                 {
-                  value: 300,
-                  name: 'Directives'
+                  value: 2,
+                  name: 'Auxiliar Staff'
                 }
                 ]
               }]
@@ -76,6 +77,7 @@
       </div>
     </div><!-- End Hospital Stats -->
   </div>
+  <!--Hospital Consultations Stats Chart-->
   <div class="col-md-6">
     <div class="card p-3 bg-success">
       <div class="filter d-inline-flex">
@@ -116,7 +118,7 @@
                 emphasis: {
                   label: {
                     show: true,
-                    fontSize: '18',
+                    fontSize: '20',
                     fontWeight: 'bold'
                   }
                 },
@@ -124,12 +126,12 @@
                   show: false
                 },
                 data: [{
-                  value: 1048,
-                  name: 'Common consultations'
+                  value: {{common_consultations_num}},
+                  name: 'Common: {{common_consultations_num}}'
                 },
                 {
-                  value: 735,
-                  name: 'Urgency consultations'
+                  value: {{urgency_consultations_num}},
+                  name: 'Urgency: {{urgency_consultations_num}}'
                 },
                 ]
               }]
